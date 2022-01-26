@@ -1,25 +1,29 @@
-from data.utils import get_landmark_ids, get_image_fpaths, label_encoder
-import pandas as pd 
+"""Testing dataframe utilities"""
+import os
+
+import pandas as pd
 from dotenv import load_dotenv
-import os 
+import numpy as np
 import pytest
-import sklearn.preprocessing as skp 
-import numpy as np 
+import sklearn.preprocessing as skp
+
+from data.utils import get_landmark_ids, get_image_fpaths, label_encoder
+
 
 
 load_dotenv() #read env vars
 
 df: pd.DataFrame = pd.read_csv(os.environ.get('TRAIN_CSV'))
 
-@pytest.mark.parametrize('num_images', [200,300,400])
+@pytest.mark.parametrize('num_images', [200, 300, 400])
 def test_get_landmarks(num_images):
-    "Test type of output, number of landmarks" 
+    "Test type of output, number of landmarks"
 
     num_landmarks: int = df['landmark_id'].nunique()
     landmarks = get_landmark_ids(dataframe=df, num_images=num_images)
     count: pd.Series = df['landmark_id'].value_counts()
     used_landmarks: list = count[count >= num_images].index.tolist()
-    not_used_landmarks: list= count[count < num_images].index.tolist()
+    not_used_landmarks: list = count[count < num_images].index.tolist()
 
     assert len(landmarks) == 2
     assert 'used_landmarks' in landmarks and 'not_used_landmarks' in landmarks
@@ -41,7 +45,7 @@ def test_image_fpaths(train):
     assert len(image_fpaths) == len(df)
     assert all([fpath.endswith('.jpg') for fpath in image_fpaths])
 
-    if train == True:
+    if train:
         assert all(['train' in fpath for fpath in image_fpaths])
     else:
         assert all(['test' in fpath for fpath in image_fpaths])
@@ -49,7 +53,7 @@ def test_image_fpaths(train):
 
 def test_label_encoder():
     "Test that values are from 0 to num_classes - 1 and length of encoded class"
-    
+
     out = label_encoder(dataframe=df)
     encoder = out['la']
     encoded_column = out['encoded_target']
@@ -67,5 +71,5 @@ def test_label_encoder():
 
 
 
-    
+
 
