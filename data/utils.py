@@ -1,12 +1,13 @@
-import pandas as pd 
-from typing import Dict, Union
+import pandas as pd # type: ignore
+from typing import Dict, Union, List
 import os 
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import LabelEncoder # type: ignore
 import numpy as np 
-import sklearn 
+import sklearn # type: ignore
+import numpy.typing as npt
 
 
-def get_landmark_ids(dataframe: pd.DataFrame, num_images: int) -> Dict[str, int]: 
+def get_landmark_ids(dataframe: pd.DataFrame, num_images: int) -> Dict[str, List[int]]: 
     """Extract landmark_id(labels) that we are going to use in our pipeline since we are not going to use all training images.
 
     Parameters
@@ -26,8 +27,8 @@ def get_landmark_ids(dataframe: pd.DataFrame, num_images: int) -> Dict[str, int]
             List of landmark_ids that have less images than num_images.
     """
     count: pd.Series = dataframe['landmark_id'].value_counts()
-    used_landmarks: list = count[count >= num_images].index.tolist()
-    not_used_landmarks: list = count[count < num_images].index.tolist()
+    used_landmarks = count[count >= num_images].index.tolist()
+    not_used_landmarks = count[count < num_images].index.tolist()
 
     return {
         'used_landmarks': used_landmarks,
@@ -62,7 +63,7 @@ def get_image_fpaths(dataframe:pd.DataFrame, train:bool) -> pd.Series:
     return image_fpaths
 
 
-def label_encoder(dataframe:pd.DataFrame, target_column: str = 'landmark_id') -> Dict[str, Union[sklearn.preprocessing.LabelEncoder, np.ndarray]]:
+def label_encoder(dataframe:pd.DataFrame, target_column: str = 'landmark_id') -> Dict[str, Union[sklearn.preprocessing.LabelEncoder, npt.NDArray[np.int64]]]:
     """Label encode target column from dataframe.
 
     Parameters

@@ -1,13 +1,13 @@
 import io 
 import sys
-import tqdm 
+import tqdm # type: ignore
 import json 
-import yaml 
-import boto3
+import yaml # type: ignore
+import boto3 # type: ignore
 import pickle
 from typing import Union,Any
-from botocore.exceptions import ClientError
-from boto3_type_annotations.s3 import Client
+from botocore.exceptions import ClientError # type: ignore
+from boto3_type_annotations.s3 import Client # type: ignore
 
 
 def artifact_to_s3(object_: Any, bucket: str, key: str, extension: str = 'json', verbose: bool = True) -> bool:
@@ -48,7 +48,7 @@ def artifact_to_s3(object_: Any, bucket: str, key: str, extension: str = 'json',
     return _upload_file_obj(file_like_object=streaming_object, bucket=bucket, key=key, extension=extension, verbose=verbose)
 
 
-def _upload_file_obj(file_like_object: io.BytesIO, key: str, bucket: str, extension: str, verbose: bool):
+def _upload_file_obj(file_like_object: io.BytesIO, key: str, bucket: str, extension: str, verbose: bool) -> bool:
 
     filesize: int = sys.getsizeof(file_like_object)
     s3client: Client = boto3.client('s3')
