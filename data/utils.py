@@ -2,11 +2,11 @@
 import os
 from typing import Dict, Union, List
 
-import pandas as pd # type: ignore
+import pandas as pd  # type:ignore
 import numpy as np
 import numpy.typing as npt
-from sklearn.preprocessing import LabelEncoder # type: ignore
-import sklearn # type: ignore
+from sklearn.preprocessing import LabelEncoder  # type: ignore
+import sklearn  # type: ignore
 
 
 def get_landmark_ids(dataframe: pd.DataFrame, num_images: int) -> Dict[str, List[int]]:
@@ -30,14 +30,11 @@ def get_landmark_ids(dataframe: pd.DataFrame, num_images: int) -> Dict[str, List
         not_used_landmarks: list
             List of landmark_ids that have less images than num_images.
     """
-    count: pd.Series = dataframe['landmark_id'].value_counts()
+    count: pd.Series = dataframe["landmark_id"].value_counts()
     used_landmarks = count[count >= num_images].index.tolist()
     not_used_landmarks = count[count < num_images].index.tolist()
 
-    return {
-        'used_landmarks': used_landmarks,
-        'not_used_landmarks': not_used_landmarks
-    }
+    return {"used_landmarks": used_landmarks, "not_used_landmarks": not_used_landmarks}
 
 
 def get_image_fpaths(dataframe: pd.DataFrame, train: bool) -> pd.Series:
@@ -59,18 +56,22 @@ def get_image_fpaths(dataframe: pd.DataFrame, train: bool) -> pd.Series:
             Pandas dataframe column containg image file paths
     """
     if train:
-        sub_dir = 'train'
+        sub_dir = "train"
     else:
-        sub_dir = 'test'
+        sub_dir = "test"
 
-    image_fpaths = dataframe['id'].map(
-        lambda image_id: os.path.join(sub_dir, image_id[0], image_id[1], image_id[2], image_id + '.jpg')
+    image_fpaths = dataframe["id"].map(
+        lambda image_id: os.path.join(
+            sub_dir, image_id[0], image_id[1], image_id[2], image_id + ".jpg"
         )
+    )
 
     return image_fpaths
 
 
-def label_encoder(dataframe: pd.DataFrame, target_column: str = 'landmark_id') -> Dict[str, Union[sklearn.preprocessing.LabelEncoder, npt.NDArray[np.int64]]]:
+def label_encoder(
+    dataframe: pd.DataFrame, target_column: str = "landmark_id"
+) -> Dict[str, Union[sklearn.preprocessing.LabelEncoder, npt.NDArray[np.int64]]]:
     """Label encode target column from dataframe.
 
     Parameters
@@ -93,13 +94,6 @@ def label_encoder(dataframe: pd.DataFrame, target_column: str = 'landmark_id') -
     encoded_target = encoder.fit_transform(dataframe[target_column])
 
     return {
-        'encoder': encoder,
-        'encoded_target': encoded_target,
+        "encoder": encoder,
+        "encoded_target": encoded_target,
     }
-
-
-
-
-
-
-
