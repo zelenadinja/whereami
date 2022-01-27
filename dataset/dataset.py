@@ -12,7 +12,7 @@ from src.utils import read_image_s3
 
 
 class LandmarkDataset(Dataset):
-    def __init__(self, dataframe: pd.DataFrame, transform: Optional[Callable[[npt.NDArray[np.float32]], torch.Tensor]]) -> None:
+    def __init__(self, dataframe: pd.DataFrame, transform: Optional[Callable[npt.NDArray[np.uint8], torch.Tensor]]) -> None:
 
         self.image_paths = np.array(dataframe['object_key'])
         self.targets = np.array(dataframe['target'])
