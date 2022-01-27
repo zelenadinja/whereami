@@ -12,6 +12,5 @@ jobs:
         python-version: 3.x
     - run: pip install --upgrade pip
     - run: pip install pylint==v3.0.0a3 mypy==v0.902
-    - run: mypy --install-types 
     - run: pylint --disable=all --enable=unused-import $(git ls-files '*.py')
-    - run: mypy --strict $(git ls-files '*.py')
+    - run: mypy --strict --follow-imports=silent $(git ls-files '*.py')
