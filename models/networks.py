@@ -23,7 +23,7 @@ class LandmarkResidual(nn.Module): # pylint: disable=too-few-public-methods
         self.pooling = nn.AdaptiveAvgPool2d(1)
         self.last_linear = nn.Linear(n_features, num_classes)
 
-    def forward(self, x) -> torch.Tensor: # pylint: disable=invalid-name
+    def forward(self, x: torch.Tensor) -> torch.Tensor: # pylint: disable=invalid-name
         """forward pass through the data"""
         batch_size = x.size(0)
         features = self.net.forward_features(x)

@@ -1,18 +1,20 @@
 """Dataset for reading images"""
 
-from typing import Dict, Union, Callable, Optional
+from typing import Callable
 
-import torch
-from torch.utils.data import Dataset
-import numpy.typing as npt
 import pandas as pd
 import numpy as np
+import torch
+from torch.utils.data import Dataset
+
 
 from src.utils import read_image_s3
 
 
 class LandmarkDataset(Dataset):
-    def __init__(self, dataframe: pd.DataFrame, transform: Optional[Callable[npt.NDArray[np.uint8], torch.Tensor]]) -> None:
+    """Pytorch dataset class for landmark dataframe"""
+
+    def __init__(self, dataframe: pd.DataFrame, transform: Callable) -> None:
 
         self.image_paths = np.array(dataframe['object_key'])
         self.targets = np.array(dataframe['target'])
@@ -21,13 +23,13 @@ class LandmarkDataset(Dataset):
     def __len__(self) -> int:
         return len(self.image_paths)
 
-    def __getitem__(self, x: int) -> Dict[str, Union[torch.Tensor, npt.NDArray[np.float32]]]:
+    def __getitem__(self, item_index: int) -> dict:
 
-        image_path = self.image_paths[x]
+        image_path = self.image_paths[item_index]
         image = read_image_s3(object_key=image_path)
         if self.transform is not None:
             image = self.transform(image=image)['image']
-        label = torch.tensor(self.targets[x], dtype=torch.long)
+        label = torch.tensor(self.targets[item_index], dtype=torch.long)
 
         return {
             'images': image,

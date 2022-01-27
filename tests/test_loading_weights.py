@@ -1,4 +1,5 @@
 """Testing loading weights into model"""
+from typing import Optional
 
 import pytest
 import timm
@@ -10,7 +11,7 @@ from models.utils import load_weights_from_s3
 @pytest.mark.parametrize("pretrained", [True, False])
 def test_weights_load(model_name: str, pretrained: bool) -> None:
     """Test that weights from pretrained models matches"""
-    weights = load_weights_from_s3(model_name=model_name)
+    weights: Optional[dict] = load_weights_from_s3(model_name=model_name)
     resnet = timm.create_model(model_name=model_name, pretrained=pretrained)
 
     assert len(weights) == len(resnet.state_dict())

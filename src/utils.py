@@ -4,13 +4,13 @@ import sys
 import os
 import pickle
 import json
-from typing import Any, Optional
+from typing import Any
 
 import yaml
 import numpy as np
+import numpy.typing as npt
 import boto3
 from PIL import Image
-import numpy.typing as npt
 from botocore.exceptions import ClientError
 from boto3_type_annotations.s3 import Client, ServiceResource
 import tqdm
@@ -100,13 +100,23 @@ def _upload_file_obj(
     return True
 
 
-def read_image_s3(object_key: str) -> Optional[npt.NDArray[np.uint8]]:
-    """Read image from S3 Bucket into numpy array"""
+def read_image_s3(object_key: str) -> npt.NDArray[np.uint8]:
+    """Read image from S3 Bucket into numpy array
+    Parameters
+    ----------
+
+    object_key: str
+        Object key on S3 Bucket with all sub-DIRs example: train/0/0/0/023132101.jpg
+
+    Returns:
+        np_image: np.ndarray
+            image as a numpy array
+    """
 
     s3_resource: ServiceResource = boto3.resource('s3')
     bucket_name = os.environ.get('S3_BUCKET')
     try:
-        image_body = s3_resource.Object(bucket_name, object_key).get()['Body']
+        image_body = s3_resource.Object(bucket_name, object_key).get()['Body'] # pylint: disable=E1101
         image = Image.open(image_body)
         np_image = np.array(image)
     except ClientError:

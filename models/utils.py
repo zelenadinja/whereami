@@ -1,7 +1,6 @@
 """Utilities for networks"""
 import io
 import os
-from typing import Optional, Dict
 
 import boto3
 from dotenv import load_dotenv
@@ -14,7 +13,7 @@ from boto3_type_annotations.s3 import Client
 load_dotenv()
 
 
-def load_weights_from_s3(model_name: str) -> Optional[Dict[str, torch.Tensor]]:
+def load_weights_from_s3(model_name: str) -> dict:
     """Load weights from S3 Bucket"""
 
     bucket = os.environ.get("S3_BUCKET")
@@ -46,5 +45,5 @@ def load_weights_from_s3(model_name: str) -> Optional[Dict[str, torch.Tensor]]:
         buffer.seek(0)  # read buffer from beginning
         weights = torch.load(buffer)
     except ClientError:
-        return None
+        raise ValueError('Could not load weights')
     return weights

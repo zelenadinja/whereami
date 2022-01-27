@@ -12,7 +12,7 @@ from src.utils import artifact_to_s3, read_image_s3
 
 
 load_dotenv()  # envs
-S3_BUCKET = os.environ.get('S3_BUCKET')
+S3_BUCKET: str = os.environ.get('S3_BUCKET')
 
 @pytest.mark.parametrize("verbose", [True, False])
 @pytest.mark.parametrize("extension", ["json", "yaml", "pkl"])
