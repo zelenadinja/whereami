@@ -3,10 +3,12 @@
 import os
 
 import boto3
+import pandas as pd
 from dotenv import load_dotenv
+import numpy as np
 import pytest
 
-from src.utils import artifact_to_s3
+from src.utils import artifact_to_s3, read_image_s3
 
 
 load_dotenv()  # envs
@@ -46,3 +48,20 @@ def test_artifacts_to_s3(verbose: bool, extension: "str") -> None:
             extension="csv",
             verbose=True,
         )
+
+def test_reading_images() -> None:
+    """Testing reading images from S3 Bucket, sample out 30 images images and
+       check their data type."""
+
+    dataframe = pd.read_csv(os.environ.get('PROCESSED_TRAIN_CSV'))
+    object_keys = np.array(dataframe['object_key'])
+    random_keys = np.random.choice(object_keys, size=30)
+
+    for i in random_keys:
+        img = read_image_s3(object_key=i)
+        assert isinstance(img, np.ndarray)
+
+    with pytest.raises(ValueError):
+        read_image_s3(object_key='nonexistingimage')
+
+

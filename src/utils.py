@@ -1,14 +1,18 @@
 """Utilities for working with s3 and local files"""
 import io
 import sys
+import os
 import pickle
 import json
-from typing import Any
+from typing import Any, Optional
 
 import yaml
+import numpy as np
 import boto3
+from PIL import Image
+import numpy.typing as npt
 from botocore.exceptions import ClientError
-from boto3_type_annotations.s3 import Client
+from boto3_type_annotations.s3 import Client, ServiceResource
 import tqdm
 
 
@@ -94,3 +98,20 @@ def _upload_file_obj(
     except ClientError:
         return False
     return True
+
+
+def read_image_s3(object_key: str) -> Optional[npt.NDArray[np.uint8]]:
+    """Read image from S3 Bucket into numpy array"""
+
+    s3_resource: ServiceResource = boto3.resource('s3')
+    bucket_name = os.environ.get('S3_BUCKET')
+    try:
+        image_body = s3_resource.Object(bucket_name, object_key).get()['Body']
+        image = Image.open(image_body)
+        np_image = np.array(image)
+    except ClientError:
+        raise ValueError('Object key does not exist!')
+    return np_image
+
+
+

@@ -19,11 +19,11 @@ df: pd.DataFrame = pd.read_csv(os.environ.get("TRAIN_CSV"))
 def test_get_landmarks(num_images: int) -> None:
     "Test type of output, number of landmarks"
 
-    num_landmarks: int = df["landmark_id"].nunique()
+    num_landmarks = df["landmark_id"].nunique()
     landmarks = get_landmark_ids(dataframe=df, num_images=num_images)
     count: pd.Series = df["landmark_id"].value_counts()
-    used_landmarks: list = count[count >= num_images].index.tolist()
-    not_used_landmarks: list = count[count < num_images].index.tolist()
+    used_landmarks = count[count >= num_images].index.tolist()
+    not_used_landmarks = count[count < num_images].index.tolist()
 
     assert len(landmarks) == 2
     assert "used_landmarks" in landmarks and "not_used_landmarks" in landmarks
