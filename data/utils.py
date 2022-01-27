@@ -2,11 +2,11 @@
 import os
 from typing import Dict, Union, List
 
-import pandas as pd  # type:ignore
+import pandas as pd
 import numpy as np
 import numpy.typing as npt
-from sklearn.preprocessing import LabelEncoder  # type: ignore
-import sklearn  # type: ignore
+from sklearn.preprocessing import LabelEncoder
+import sklearn
 
 
 def get_landmark_ids(dataframe: pd.DataFrame, num_images: int) -> Dict[str, List[int]]:
@@ -70,7 +70,7 @@ def get_image_fpaths(dataframe: pd.DataFrame, train: bool) -> pd.Series:
 
 
 def label_encoder(
-    dataframe: pd.DataFrame, target_column: str = "landmark_id"
+        dataframe: pd.DataFrame, target_column: str = "landmark_id"
 ) -> Dict[str, Union[sklearn.preprocessing.LabelEncoder, npt.NDArray[np.int64]]]:
     """Label encode target column from dataframe.
 

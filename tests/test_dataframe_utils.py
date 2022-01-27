@@ -16,7 +16,7 @@ df: pd.DataFrame = pd.read_csv(os.environ.get("TRAIN_CSV"))
 
 
 @pytest.mark.parametrize("num_images", [200, 300, 400])
-def test_get_landmarks(num_images):
+def test_get_landmarks(num_images: int) -> None:
     "Test type of output, number of landmarks"
 
     num_landmarks: int = df["landmark_id"].nunique()
@@ -39,7 +39,7 @@ def test_get_landmarks(num_images):
 
 
 @pytest.mark.parametrize("train", [True, False])
-def test_image_fpaths(train):
+def test_image_fpaths(train: bool) -> None:
     "Test length, test that every image ends with .jpg, test that ever training image starts with train/ DIR and test image with test/ DIR"
 
     image_fpaths = get_image_fpaths(dataframe=df, train=train)
@@ -54,7 +54,7 @@ def test_image_fpaths(train):
         assert all(["test" in fpath for fpath in image_fpaths])
 
 
-def test_label_encoder():
+def test_label_encoder() -> None:
     "Test that values are from 0 to num_classes - 1 and length of encoded class"
 
     out = label_encoder(dataframe=df)

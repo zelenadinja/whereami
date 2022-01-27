@@ -5,15 +5,15 @@ import pickle
 import json
 from typing import Any
 
-import yaml  # type: ignore
-import boto3  # type: ignore
-from botocore.exceptions import ClientError  # type: ignore
-from boto3_type_annotations.s3 import Client  # type: ignore
-import tqdm  # type: ignore
+import yaml
+import boto3
+from botocore.exceptions import ClientError
+from boto3_type_annotations.s3 import Client
+import tqdm
 
 
 def artifact_to_s3(
-    object_: Any, bucket: str, key: str, extension: str = "json", verbose: bool = True
+        object_: Any, bucket: str, key: str, extension: str = "json", verbose: bool = True
 ) -> bool:
     """Uploads object on S3 Bucket.
 
@@ -65,7 +65,7 @@ def artifact_to_s3(
 
 
 def _upload_file_obj(
-    file_like_object: io.BytesIO, key: str, bucket: str, extension: str, verbose: bool
+        file_like_object: io.BytesIO, key: str, bucket: str, extension: str, verbose: bool
 ) -> bool:
 
     filesize: int = sys.getsizeof(file_like_object)
@@ -73,18 +73,18 @@ def _upload_file_obj(
     try:
         if verbose:
             with tqdm.tqdm(
-                total=filesize,
-                unit="B",
-                unit_scale=True,
-                ascii=True,
-                desc=f"Uplaoding {key} to S3 Bucket",
+                    total=filesize,
+                    unit="B",
+                    unit_scale=True,
+                    ascii=True,
+                    desc=f"Uplaoding {key} to S3 Bucket",
             ) as pbar:
                 s3client.upload_fileobj(
                     Fileobj=file_like_object,
                     Bucket=bucket,
                     Key=key + "." + extension,
                     Callback=lambda bytes_transfered: pbar.update(bytes_transfered),
-                )
+                    )
         else:
             s3client.upload_fileobj(
                 Fileobj=file_like_object,
