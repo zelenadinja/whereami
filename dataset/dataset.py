@@ -1,6 +1,6 @@
 """Dataset for reading images"""
 
-from typing import Dict, Union, Callable, Any, Optional
+from typing import Dict, Union, Callable, Optional
 
 import torch
 from torch.utils.data import Dataset
