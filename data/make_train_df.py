@@ -2,7 +2,7 @@
 
 import os
 
-import pandas as pd
+import pandas as pd # type: ignore
 from dotenv import load_dotenv
 
 from data.utils import get_landmark_ids, get_image_fpaths, label_encoder

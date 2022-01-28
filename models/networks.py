@@ -1,4 +1,3 @@
-"""Networks for landmark recognition"""
 
 import timm
 import torch.nn as nn

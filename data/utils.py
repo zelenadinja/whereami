@@ -1,12 +1,11 @@
-"""Utilites for making and modifying dataframe."""
 import os
 from typing import Dict, Union, List
 
-import pandas as pd
+import pandas as pd # type: ignore
 import numpy as np
 import numpy.typing as npt
-from sklearn.preprocessing import LabelEncoder
-import sklearn
+from sklearn.preprocessing import LabelEncoder # type: ignore
+import sklearn # type: ignore
 
 
 def get_landmark_ids(dataframe: pd.DataFrame, num_images: int) -> Dict[str, List[int]]:

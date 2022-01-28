@@ -1,6 +1,7 @@
-"""Utilities for networks"""
 import io
 import os
+from typing import Optional
+import sys
 
 import boto3
 from dotenv import load_dotenv
@@ -25,7 +26,7 @@ def load_weights_from_s3(model_name: str) -> dict:
             )["ResponseMetadata"]["HTTPHeaders"]["content-length"]
         )
     except ClientError:
-        raise ValueError(f'Weights for {model_name} does not exist on S3 Bucket.')
+        raise ValueError(f"Weights for {model_name} does not exist on S3 Bucket.")
 
     try:
         buffer = io.BytesIO()
@@ -45,5 +46,32 @@ def load_weights_from_s3(model_name: str) -> dict:
         buffer.seek(0)  # read buffer from beginning
         weights = torch.load(buffer)
     except ClientError:
-        raise ValueError('Could not load weights')
+        raise ValueError("Could not load weights")
     return weights
+
+
+def save_checkpoint_to_s3(checkpoint: dict, checkpoint_name: str) -> Optional[bool]:
+    """Save training checkpoint directly to S3 Bucket"""
+
+    s3client: Client = boto3.client("s3")
+    buffer = io.BytesIO()
+    torch.save(checkpoint, buffer)
+    buffer.seek(0)
+    filesize = sys.getsizeof(buffer)
+    try:
+        with tqdm.tqdm(
+                total=filesize,
+                unit="B",
+                unit_scale=True,
+                unit_divisor=1024,
+                desc="Saving checkpoint to S3",
+        ) as pbar:
+            s3client.upload_fileobj(
+                Fileobj=buffer,
+                Bucket=os.environ.get("S3_BUCKET"),
+                Key=f"checkpoints/{checkpoint_name}.pth",
+                Callback=lambda bytes_transfed: pbar.update(bytes_transfed),
+            )
+    except ClientError:
+        return None
+    return True

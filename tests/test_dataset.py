@@ -1,5 +1,3 @@
-"""Testing dataset"""
-
 import os
 from typing import Any
 

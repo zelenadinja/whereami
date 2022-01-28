@@ -1,4 +1,3 @@
-"""Testing loading weights into model"""
 from typing import Optional
 
 import pytest

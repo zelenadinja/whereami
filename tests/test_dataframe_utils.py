@@ -1,4 +1,3 @@
-"""Testing dataframe utilities"""
 import os
 
 import pandas as pd

@@ -1,4 +1,3 @@
-"""Test resnet networks"""
 
 import torch.nn.functional as F
 import torch
@@ -20,4 +19,3 @@ def test_output_of_network() -> None:
     custom_pooled_features = custom_resnet50.pooling(custom_features).view(8, -1)
     assert (features == custom_features).all().item()
     assert (pooled_features == custom_pooled_features).all().item()
-    
