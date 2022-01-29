@@ -10,9 +10,9 @@ def aug_version_1(config: dict) -> Callable:
     just resize and normalize"""
 
     return albumentations.Compose(
-        {
+        [
             albumentations.Resize(config['size'], config['size']),
             albumentations.Normalize(), #imagnet
             ToTensorV2(),
-        }
+        ]
     )

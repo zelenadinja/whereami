@@ -4,6 +4,7 @@ import torch
 import wandb
 from sklearn.model_selection import train_test_split
 from dotenv import load_dotenv
+import pandas as pd
 
 from dataset.dataset import LandmarkDataset
 from dataset.augmentations import aug_version_1
@@ -19,7 +20,7 @@ def main(run_name) -> None:
     with wandb.init(project="landmarkrecognition", name=run_name):
 
         load_dotenv()
-        args = read_artifacts_s3(object_key=os.environ.get("VERSION_0"))
+        args = read_artifacts_s3(object_key=os.environ.get("CONFIG_VERSION_0"))
         set_seed(args["seed"])
         df = pd.read_csv(args["df_path"])
         train, valid = train_test_split(
@@ -31,14 +32,14 @@ def main(run_name) -> None:
             train_dataset,
             batch_size=args["train_batch"],
             shuffle=True,
-            num_workers=4,
+            num_workers=args['workers'],
             pin_memory=True,
         )
         valiloader = torch.utils.data.DataLoader(
             valid_dataset,
             batch_size=args["valid_batch"],
             shuffle=True,
-            num_workers=4,
+            num_workers=args['workers'],
             pin_memory=True,
         )
         device = torch.device(args["device"])
@@ -123,7 +124,7 @@ def main(run_name) -> None:
 
 if __name__ == '__main__':
     main(run_name='VERSION_1')
-    
+
 
 
 
