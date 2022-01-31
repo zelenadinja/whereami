@@ -5,8 +5,8 @@ from typing import Callable
 import albumentations
 from albumentations.pytorch import ToTensorV2
 
-def aug_version_1(config: dict) -> Callable:
-    """augmentations for version 1, same for both train and valid,
+def aug_version_0(config: dict) -> Callable:
+    """augmentations for version 0, same for both train and valid,
     just resize and normalize"""
 
     return albumentations.Compose(
@@ -16,3 +16,29 @@ def aug_version_1(config: dict) -> Callable:
             ToTensorV2(),
         ]
     )
+
+def aug_version_1(config: dict, train: bool) -> Callable:
+    """augmentations for version 1"""
+
+    if train:
+        return albumentations.Compose(
+            [
+                albumentations.Resize(config['train_size'], config['valid_size']),
+                albumentations.RandomResizedCrop(config['crop_size'], config['crop_size']),
+                albumentations.Normalize(),
+                albumentations.HorizontalFlip(),
+                albumentations.Cutout(),
+                albumentations.RandomBrightnessContrast(),
+                albumentations.ShiftScaleRotate(),
+                ToTensorV2(),
+            ]
+        )
+    else:
+        return albumentations.Compose(
+            [
+                albumentations.Resize(config['valid_size'], config['valid_size']),
+                albumentations.Normalize(),
+                ToTensorV2(),
+            ]
+        )
+

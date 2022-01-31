@@ -8,7 +8,7 @@ from models.utils import load_weights_from_s3
 
 class LandmarkResidual(nn.Module): # pylint: disable=too-few-public-methods
     """Resnet Models"""
-    def __init__(self, model: str = 'resnet18', pretrained: int = True, num_classes: int = 495) -> None:
+    def __init__(self, model: str = 'resnet18', pretrained: int = True, num_classes: int = 491) -> None:
         super().__init__()
 
         self.net = timm.create_model(model, pretrained=False)

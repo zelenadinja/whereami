@@ -14,8 +14,8 @@ def train_epoch(
 
     model.train()
 
-    train_acc = torchmetrics.Accuracy()
-    train_f1 = torchmetrics.F1Score(num_classes=num_classes, average="weighted")
+    train_acc = torchmetrics.Accuracy().to(device)
+    train_f1 = torchmetrics.F1(num_classes=num_classes, average="weighted").to(device)
     train_loss = AverageMeter()
     pbar = tqdm.tqdm(
         enumerate(loader),
@@ -45,6 +45,7 @@ def train_epoch(
         if (batch_idx + 1) % log_freq == 0:
             wandb.log(
                 {
+                    f"train_batch_loss_{epoch}": loss.detach(),
                     f"train_batch_accuracy_{epoch}": batch_acc,
                     f"train_batch_f1_score_{epoch}": batch_f1,
                 }
@@ -61,8 +62,8 @@ def validate_epoch(
 
     model.eval()
 
-    valid_acc = torchmetrics.Accuracy()
-    valid_f1 = torchmetrics.F1Score(num_classes=num_classes, average="weighted")
+    valid_acc = torchmetrics.Accuracy().to(device)
+    valid_f1 = torchmetrics.F1(num_classes=num_classes, average="weighted").to(device)
     valid_loss = AverageMeter()
     pbar = tqdm.tqdm(
         enumerate(loader),
@@ -88,9 +89,10 @@ def validate_epoch(
 
             if (batch_idx + 1) % log_freq == 0:
                 wandb.log(
-                    {
+                    {   f"valid_batch_loss_{epoch}": loss,
                         f"valid_batch_accuracy_{epoch}": batch_acc,
                         f"valid_batch_f1_score_{epoch}": batch_f1,
+
                     }
                 )
 

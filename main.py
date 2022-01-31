@@ -5,6 +5,7 @@ import wandb
 from sklearn.model_selection import train_test_split
 from dotenv import load_dotenv
 import pandas as pd
+import numpy as np
 
 from dataset.dataset import LandmarkDataset
 from dataset.augmentations import aug_version_1
@@ -20,14 +21,14 @@ def main(run_name) -> None:
     with wandb.init(project="landmarkrecognition", name=run_name):
 
         load_dotenv()
-        args = read_artifacts_s3(object_key=os.environ.get("CONFIG_VERSION_0"))
+        args = read_artifacts_s3(object_key=os.environ.get("CONFIG_VERSION_1"))
         set_seed(args["seed"])
         df = pd.read_csv(args["df_path"])
         train, valid = train_test_split(
             df, test_size=args["valid_split"], shuffle=True, random_state=args["seed"]
         )
-        train_dataset = LandmarkDataset(dataframe=train, transform=aug_version_1(args))
-        valid_dataset = LandmarkDataset(dataframe=valid, transform=aug_version_1(args))
+        train_dataset = LandmarkDataset(dataframe=train, transform=aug_version_1(args, train=True))
+        valid_dataset = LandmarkDataset(dataframe=valid, transform=aug_version_1(args, train=True))
         trainloader = torch.utils.data.DataLoader(
             train_dataset,
             batch_size=args["train_batch"],
@@ -35,7 +36,7 @@ def main(run_name) -> None:
             num_workers=args['workers'],
             pin_memory=True,
         )
-        valiloader = torch.utils.data.DataLoader(
+        validloader = torch.utils.data.DataLoader(
             valid_dataset,
             batch_size=args["valid_batch"],
             shuffle=True,
@@ -50,7 +51,7 @@ def main(run_name) -> None:
         )
         model.to(device)
         optimizer = torch.optim.Adam(model.parameters(), lr=args["lr"])
-        loss_fc = criterion()
+        loss_fn = criterion()
 
         best_loss = np.inf
 
@@ -68,7 +69,7 @@ def main(run_name) -> None:
                 model,
                 trainloader,
                 optimizer,
-                loss_fc,
+                loss_fn,
                 device,
                 args["num_classes"],
                 epoch + 1,
@@ -77,7 +78,7 @@ def main(run_name) -> None:
             valid_loss, valid_acc, valid_f1 = validate_epoch(
                 model,
                 validloader,
-                criterion,
+                loss_fn,
                 device,
                 args["num_classes"],
                 epoch + 1,
@@ -95,15 +96,15 @@ def main(run_name) -> None:
                 }
             )
             print(
-                f"Epoch:{epoch+1} Train Loss:{train_loss:.f} Valid Loss:{valid_loss:.4f} Train Acc:{train_acc:.4f} Valid Acc:{valid_acc:4f} Train F1:{train_f1:.4f} Valid F1:{valid_f1:.4f} "
+                f"Epoch:{epoch+1} Train Loss:{train_loss:.4f} Valid Loss:{valid_loss:.4f} Train Acc:{train_acc:.4f} Valid Acc:{valid_acc:.4f} Train F1:{train_f1:.4f} Valid F1:{valid_f1:.4f} "
             )
 
-            history['training_acc'].append(train_acc)
-            history['training_losses'].append(train_loss)
-            history['training_f1scores'].append(train_f1)
-            history['validation_acc'].append(valid_acc)
-            history['validation_losses'].append(valid_loss)
-            history['validation_f1scores'].append(valid_f1)
+            history['training_acc'].append(float(train_acc))
+            history['training_losses'].append(float(train_loss))
+            history['training_f1scores'].append(float(train_f1))
+            history['validation_acc'].append(float(valid_acc))
+            history['validation_losses'].append(float(valid_loss))
+            history['validation_f1scores'].append(float(valid_f1))
 
 
             if valid_loss < best_loss:
