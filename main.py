@@ -21,18 +21,27 @@ def main(run_name) -> None:
     with wandb.init(project="landmarkrecognition", name=run_name):
 
         load_dotenv()
-        args = read_artifacts_s3(object_key=os.environ.get("CONFIG_VERSION_1"))
+        args = read_artifacts_s3(object_key=os.environ.get("CONFIG_VERSION_2"))
         set_seed(args["seed"])
         df = pd.read_csv(args["df_path"])
         train, valid = train_test_split(
             df, test_size=args["valid_split"], shuffle=True, random_state=args["seed"]
         )
+
         train_dataset = LandmarkDataset(dataframe=train, transform=aug_version_1(args, train=True))
         valid_dataset = LandmarkDataset(dataframe=valid, transform=aug_version_1(args, train=True))
+
+        class_sample_count = np.unique(train_dataset.targets, return_counts=True)[1]
+        weight = 1. / class_sample_count
+        samples_weight = np.array([weight[t] for t in train_dataset.targets])
+        samples_weight = torch.from_numpy(samples_weight)
+        samples_weigth = samples_weight.double()
+        sampler = WeightedRandomSampler(weights=samples_weight, num_samples=len(samples_weight))
+
         trainloader = torch.utils.data.DataLoader(
             train_dataset,
             batch_size=args["train_batch"],
-            shuffle=True,
+            sampler=sampler,
             num_workers=args['workers'],
             pin_memory=True,
         )
@@ -50,10 +59,12 @@ def main(run_name) -> None:
             num_classes=args["num_classes"],
         )
         model.to(device)
-        optimizer = torch.optim.Adam(model.parameters(), lr=args["lr"])
+        optimizer = torch.optim.Adam(model.parameters(), lr=args["lr"], weight_decay=args['decay'])
         loss_fn = criterion()
 
         best_loss = np.inf
+        best_f1 = 0
+        best_acc = 0
 
         history = dict()
         history['training_acc'] = list()
@@ -106,6 +117,14 @@ def main(run_name) -> None:
             history['validation_losses'].append(float(valid_loss))
             history['validation_f1scores'].append(float(valid_f1))
 
+            if valid_acc > best_acc:
+                wandb.summary['best_validation_accuracy'] = valid_loss
+                best_acc = valid_acc
+
+            if valid_f1 > best_f1:
+                wandb.summary['best_validation_f1score'] = valid_f1
+                best_f1 = valid_f1
+
 
             if valid_loss < best_loss:
                 checkpoint = {
@@ -113,8 +132,8 @@ def main(run_name) -> None:
                     'optimizer': optimizer.state_dict(),
                     'epoch': epoch,
                     'loss':valid_loss,
-                    'acc':valid_acc,
-                    'f1score':valid_f1,
+                    'acc':best_acc,
+                    'f1score':best_f1,
                 }
                 save_checkpoint_to_s3(checkpoint=checkpoint, checkpoint_name=f"{run_name}_e{epoch+1}")
                 print(f'Validation loss decreased from {best_loss:4f} to {valid_loss:.4f}')
@@ -124,7 +143,7 @@ def main(run_name) -> None:
         artifact_to_s3(history, bucket=os.environ.get('S3_BUCKET'), key=f'run_artifacts/{run_name}')
 
 if __name__ == '__main__':
-    main(run_name='VERSION_1')
+    main(run_name='VERSION_2')
 
 
 

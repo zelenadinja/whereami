@@ -24,16 +24,15 @@ class LandmarkDataset(Dataset):
 
     def __getitem__(self, item_index: int) -> dict:
 
-        image_path = self.image_paths_kaggle[item_index]
+        image_path = self.image_paths[item_index]
         image = read_image_s3(object_key=image_path)
         if self.transform is not None:
             image = self.transform(image=image)['image']
         label = torch.tensor(self.targets[item_index], dtype=torch.long)
 
-        return {
-            'images': image,
-            'labels': label
-        }
+        return image, label
+
+
 
 
 

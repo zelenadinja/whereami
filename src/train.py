@@ -1,6 +1,4 @@
-# pylint: disable=too-many-locals
-
-import tqdm  # type: ignore
+import tqdm
 import torchmetrics
 import wandb
 from src.utils import AverageMeter
@@ -9,7 +7,7 @@ import torch
 
 def train_epoch(
         model, loader, optimizer, criterion, device, num_classes, epoch, log_freq
-):  # pylint: disable=too-many-arguments
+):
     """Forward  and backward pass"""
 
     model.train()
@@ -26,9 +24,8 @@ def train_epoch(
         desc=f"Training epoch:{epoch}",
     )
 
-    for batch_idx, batch_data in pbar:
+    for batch_idx, (images, labels) in pbar:
 
-        images, labels = batch_data["images"], batch_data["labels"]
         images, labels = images.to(device), labels.to(device)
 
         model.zero_grad(set_to_none=True)
@@ -75,9 +72,8 @@ def validate_epoch(
     )
 
     with torch.no_grad():
-        for batch_idx, batch_data in pbar:
+        for batch_idx, (images, labels) in pbar:
 
-            images, labels = batch_data["images"], batch_data["labels"]
             images, labels = images.to(device), labels.to(device)
 
             outputs = model(images)
@@ -89,9 +85,9 @@ def validate_epoch(
 
             if (batch_idx + 1) % log_freq == 0:
                 wandb.log(
-                    {   f"valid_batch_loss_{epoch}": loss,
-                        f"valid_batch_accuracy_{epoch}": batch_acc,
-                        f"valid_batch_f1_score_{epoch}": batch_f1,
+                    {f"valid_batch_loss_{epoch}": loss,
+                     f"valid_batch_accuracy_{epoch}": batch_acc,
+                     f"valid_batch_f1_score_{epoch}": batch_f1,
 
                     }
                 )
