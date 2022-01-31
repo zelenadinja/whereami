@@ -19,9 +19,9 @@ if __name__ == "__main__":
     S3_OBJECT_KEYS = []
     OBJS = [
         obj["Key"]
-        for obj in S3CLIENT.list_objects_v2(Bucket="landmarkdataset", Prefix="train")[
-            "Contents"
-        ]
+        for obj in S3CLIENT.list_objects_v2(
+            Bucket="landmarkdataset", Prefix="train"
+            )["Contents"]
     ]
     S3_OBJECT_KEYS.append(OBJS)
     DIVIDER = math.floor(len(DF_OBJECT_KEYS) / 1000)
