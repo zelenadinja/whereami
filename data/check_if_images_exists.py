@@ -38,7 +38,6 @@ if __name__ == "__main__":
         S3_OBJECT_KEYS.append(objs)
 
     S3_OBJECT_KEYS = list(np.concatenate(S3_OBJECT_KEYS))
-    S3_OBJECT_KEYS.remove("train/dataset_lock.lock")
     S3_OBJECT_KEYS.sort()
     DF_OBJECT_KEYS.sort()
 
