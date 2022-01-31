@@ -1,17 +1,17 @@
 #  type: ignore
-import os
 import io
+import os
 
 import boto3
-import pandas as pd
-from dotenv import load_dotenv
 import numpy as np
+import pandas as pd
 import pytest
 import timm
 import torch
+from dotenv import load_dotenv
 
-from src.utils import artifact_to_s3, read_image_s3, read_artifacts_s3
 from models.utils import save_checkpoint_to_s3
+from src.utils import artifact_to_s3, read_artifacts_s3, read_image_s3
 
 load_dotenv()  # envs
 S3_BUCKET: str = os.environ.get('S3_BUCKET')

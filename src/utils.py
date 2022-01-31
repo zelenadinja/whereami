@@ -1,22 +1,21 @@
 import io
-import sys
+import json
 import os
 import pickle
-import json
-from typing import Any
 import random
+import sys
+from typing import Any
 
-import yaml  # type: ignore
+import boto3
 import numpy as np
 import numpy.typing as npt
-from dotenv import load_dotenv
-import boto3
-from PIL import Image
-from botocore.exceptions import ClientError
-from boto3_type_annotations.s3 import Client, ServiceResource
-import tqdm
 import torch
-
+import tqdm
+import yaml  # type: ignore
+from boto3_type_annotations.s3 import Client, ServiceResource
+from botocore.exceptions import ClientError
+from dotenv import load_dotenv
+from PIL import Image
 
 load_dotenv()
 

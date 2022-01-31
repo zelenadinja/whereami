@@ -2,20 +2,20 @@
 import os
 from typing import Dict, List
 
+import numpy as np
+import pandas as pd
 import torch
 import wandb
-from sklearn.model_selection import train_test_split
 from dotenv import load_dotenv
-import pandas as pd
-import numpy as np
+from sklearn.model_selection import train_test_split
 
-from dataset.dataset import LandmarkDataset
 from dataset.augmentations import aug_version_1
+from dataset.dataset import LandmarkDataset
+from models.losses import criterion
 from models.networks import LandmarkResidual
 from models.utils import save_checkpoint_to_s3
-from models.losses import criterion
-from src.utils import read_artifacts_s3, set_seed, artifact_to_s3
 from src.train import train_epoch, validate_epoch
+from src.utils import artifact_to_s3, read_artifacts_s3, set_seed
 
 
 def main(run_name) -> None:

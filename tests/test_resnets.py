@@ -1,8 +1,7 @@
 
-import torch.nn.functional as F
-import torch
 import timm
-
+import torch
+import torch.nn.functional as F
 
 from models.networks import LandmarkResidual
 
