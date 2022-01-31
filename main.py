@@ -78,7 +78,7 @@ def main(run_name) -> None:
         best_f1 = 0
         best_acc = 0
 
-        history: Dict[str, List[int]] = dict()
+        history: Dict[str, List[float]] = dict()
         history['training_acc'] = list()
         history['training_losses'] = list()
         history['training_f1scores'] = list()
