@@ -6,7 +6,7 @@ import json
 from typing import Any
 import random
 
-import yaml
+import yaml #  type: ignore
 import numpy as np
 import numpy.typing as npt
 from dotenv import load_dotenv
