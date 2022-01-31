@@ -2,12 +2,11 @@
 
 import os
 
-import pandas as pd # type: ignore
+import pandas as pd  # type: ignore
 from dotenv import load_dotenv
-
-from data.utils import get_landmark_ids, get_image_fpaths, label_encoder
 from src.utils import artifact_to_s3
 
+from data.utils import get_image_fpaths, get_landmark_ids, label_encoder
 
 if __name__ == "__main__":
 
@@ -17,14 +16,16 @@ if __name__ == "__main__":
     LANDMARKS = get_landmark_ids(dataframe=DF, num_images=200)
     USED_LANDMARKS = LANDMARKS["used_landmarks"]
     NOT_USED_LANDMARKS = LANDMARKS["not_used_landmarks"]
-    USED_OBJECT_KEYS = DF[DF["landmark_id"].isin(USED_LANDMARKS)]["object_key"].tolist()
+    USED_OBJECT_KEYS = DF[DF["landmark_id"].isin(USED_LANDMARKS)][
+        "object_key"
+    ].tolist()
     NOT_USED_OBJECT_KEYS = DF[DF["landmark_id"].isin(NOT_USED_LANDMARKS)][
         "object_key"
     ].tolist()
     DF = DF[DF["landmark_id"].isin(USED_LANDMARKS)].reset_index(drop=True)
     ENC = label_encoder(dataframe=DF, target_column="landmark_id")
     DF["target"] = ENC["encoded_target"]
-    LABEL_ENCODER = ENC["la"]
+    LABEL_ENCODER = ENC["encoder"]
 
     # Save artifacts
     artifact_to_s3(

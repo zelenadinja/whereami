@@ -22,11 +22,14 @@ def load_weights_from_s3(model_name: str) -> dict:
     try:
         filesize = int(
             s3_client.head_object(
-                Bucket="landmarkdataset", Key=f"pretrainedweights/{model_name}.pth"
+                Bucket="landmarkdataset",
+                Key=f"pretrainedweights/{model_name}.pth"
             )["ResponseMetadata"]["HTTPHeaders"]["content-length"]
         )
     except ClientError:
-        raise ValueError(f"Weights for {model_name} does not exist on S3 Bucket.")
+        raise ValueError(
+            f"Weights for {model_name} does not exist on S3 Bucket."
+            )
 
     try:
         buffer = io.BytesIO()
@@ -41,7 +44,7 @@ def load_weights_from_s3(model_name: str) -> dict:
                 Bucket=bucket,
                 Key=f"pretrainedweights/{model_name}.pth",
                 Fileobj=buffer,
-                Callback=lambda bytes_transfered: pbar.update(bytes_transfered),
+                Callback=lambda bytes_: pbar.update(bytes_),
             )
         buffer.seek(0)  # read buffer from beginning
         weights = torch.load(buffer)
@@ -50,7 +53,9 @@ def load_weights_from_s3(model_name: str) -> dict:
     return weights
 
 
-def save_checkpoint_to_s3(checkpoint: dict, checkpoint_name: str) -> Optional[bool]:
+def save_checkpoint_to_s3(
+    checkpoint: dict, checkpoint_name: str
+) -> Optional[bool]:
     """Save training checkpoint directly to S3 Bucket"""
 
     s3client: Client = boto3.client("s3")

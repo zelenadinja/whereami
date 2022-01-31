@@ -15,6 +15,7 @@ from models.utils import save_checkpoint_to_s3
 load_dotenv()  # envs
 S3_BUCKET: str = os.environ.get('S3_BUCKET')
 
+
 @pytest.mark.parametrize("verbose", [True, False])
 @pytest.mark.parametrize("extension", ["json", "yaml", "pkl"])
 def test_artifacts_to_s3(verbose: bool, extension: "str") -> None:
@@ -50,6 +51,7 @@ def test_artifacts_to_s3(verbose: bool, extension: "str") -> None:
             verbose=True,
         )
 
+
 def test_reading_images() -> None:
     """Testing reading images from S3 Bucket, sample out 30 images images and
        check their data type."""
@@ -70,25 +72,30 @@ def test_reading_artifacts() -> None:
     """Testin reading artifacts from S3 Bucket"""
 
     sample_obj = [1, 2, 3, 4, 5]
-    artifact_to_s3(object_=sample_obj, bucket=S3_BUCKET, key='sample', verbose=False)
+    artifact_to_s3(
+        object_=sample_obj, bucket=S3_BUCKET, key='sample', verbose=False
+    )
 
     assert sample_obj == read_artifacts_s3(object_key='sample.json')
+
 
 def test_saving_checkpoints() -> None:
     """Test saving checkpoints to s3 bucket"""
     model = timm.create_model('resnet50', pretrained=True)
     checkpoint = {
-        'model':model.state_dict()
+        'model': model.state_dict()
     }
-    save_checkpoint_to_s3(checkpoint=checkpoint, checkpoint_name='test_checkpoint')
+    save_checkpoint_to_s3(
+        checkpoint=checkpoint, checkpoint_name='test_checkpoint'
+    )
     s3_resource = boto3.resource('s3')
-    checkpoint_obj = s3_resource.Object(S3_BUCKET, 'checkpoints/test_checkpoint.pth')
+    checkpoint_obj = s3_resource.Object(
+        S3_BUCKET, 'checkpoints/test_checkpoint.pth'
+    )
     checkpoint_body = checkpoint_obj.get()['Body'].read()
     checkpoint = torch.load(io.BytesIO(checkpoint_body))
 
-    assert (checkpoint['model']['conv1.weight'] == model.state_dict()['conv1.weight']).all().item()
-
-
-
-
-
+    assert (
+        checkpoint['model']['conv1.weight'] ==
+        model.state_dict()['conv1.weight']
+    ).all().item()

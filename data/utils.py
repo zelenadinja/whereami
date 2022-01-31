@@ -1,14 +1,16 @@
 import os
-from typing import Dict, Union, List
+from typing import Dict, List, Union
 
-import pandas as pd # type: ignore
 import numpy as np
-import numpy.typing as npt
-from sklearn.preprocessing import LabelEncoder # type: ignore
-import sklearn # type: ignore
+import pandas as pd  # type: ignore
+import sklearn  # type: ignore
+from sklearn.preprocessing import LabelEncoder  # type: ignore
 
 
-def get_landmark_ids(dataframe: pd.DataFrame, num_images: int) -> Dict[str, List[int]]:
+def get_landmark_ids(
+        dataframe: pd.DataFrame, num_images: int
+) -> Dict[str, List[int]]:
+
     """Extract landmark_id(labels) that we are going to use in our pipeline
          since we are not going to use all training images.
 
@@ -18,8 +20,10 @@ def get_landmark_ids(dataframe: pd.DataFrame, num_images: int) -> Dict[str, List
     dataframe: pd.DataFrame
         Training csv that contains landmark ids
 
+
     num_images: int
-        Minimum number of images which class contains, for example if num_images=200,
+        Minimum number of images which class contains,
+         for example if num_images=200,
          it will return ids that have atleast 200 images.
 
     Returns
@@ -33,7 +37,10 @@ def get_landmark_ids(dataframe: pd.DataFrame, num_images: int) -> Dict[str, List
     used_landmarks = count[count >= num_images].index.tolist()
     not_used_landmarks = count[count < num_images].index.tolist()
 
-    return {"used_landmarks": used_landmarks, "not_used_landmarks": not_used_landmarks}
+    return {
+        'used_landmarks': used_landmarks,
+        'not_used_landmarks': not_used_landmarks,
+    }
 
 
 def get_image_fpaths(dataframe: pd.DataFrame, train: bool) -> pd.Series:
@@ -48,7 +55,8 @@ def get_image_fpaths(dataframe: pd.DataFrame, train: bool) -> pd.Series:
         Training csv which contains image ids
 
     train: bool
-        If true it will make paths for training images which means DIR will be train/ else test/
+        If true it will make paths for training images,
+         which means DIR will be train/ else test/
 
     Returns
         image_fpaths: pd.Series
@@ -69,8 +77,8 @@ def get_image_fpaths(dataframe: pd.DataFrame, train: bool) -> pd.Series:
 
 
 def label_encoder(
-        dataframe: pd.DataFrame, target_column: str = "landmark_id"
-) -> Dict[str, Union[sklearn.preprocessing.LabelEncoder, npt.NDArray[np.int64]]]:
+    dataframe: pd.DataFrame, target_column: str = "landmark_id"
+) -> Dict[str, Union[sklearn.preprocessing.LabelEncoder, np.ndarray]]:
     """Label encode target column from dataframe.
 
     Parameters

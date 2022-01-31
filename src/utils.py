@@ -20,6 +20,7 @@ import torch
 
 load_dotenv()
 
+
 class AverageMeter:
     ''' Computes and stores the average and current value '''
     def __init__(self) -> None:
@@ -39,8 +40,10 @@ class AverageMeter:
         self.count += num
         self.avg = self.sum / self.count
 
+
 def artifact_to_s3(
-        object_: Any, bucket: str, key: str, extension: str = "json", verbose: bool = True
+        object_: Any, bucket: str, key: str,
+        extension: str = "json", verbose: bool = True
 ) -> bool:
     """Uploads object on S3 Bucket.
 
@@ -92,7 +95,8 @@ def artifact_to_s3(
 
 
 def _upload_file_obj(
-        file_like_object: io.BytesIO, key: str, bucket: str, extension: str, verbose: bool
+        file_like_object: io.BytesIO, key: str,
+        bucket: str, extension: str, verbose: bool
 ) -> bool:
 
     filesize: int = sys.getsizeof(file_like_object)
@@ -110,7 +114,7 @@ def _upload_file_obj(
                     Fileobj=file_like_object,
                     Bucket=bucket,
                     Key=key + "." + extension,
-                    Callback=lambda bytes_transfered: pbar.update(bytes_transfered),
+                    Callback=lambda bytes_: pbar.update(bytes_),
                     )
         else:
             s3client.upload_fileobj(
@@ -129,7 +133,8 @@ def read_image_s3(object_key: str) -> npt.NDArray[np.uint8]:
     ----------
 
     object_key: str
-        Object key on S3 Bucket with all sub-DIRs example: train/0/0/0/023132101.jpg
+        Object key on S3 Bucket with all sub-DIRs
+         example: train/0/0/0/023132101.jpg
 
     Returns:
         np_image: np.ndarray
@@ -191,8 +196,3 @@ def set_seed(seed: int = 42) -> None:
     torch.cuda.manual_seed(seed)
     torch.backends.cudnn.deterministic = False
     torch.backends.cudnn.benchmark = True
-
-
-
-
-

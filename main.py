@@ -25,18 +25,27 @@ def main(run_name) -> None:
         set_seed(args["seed"])
         df = pd.read_csv(args["df_path"])
         train, valid = train_test_split(
-            df, test_size=args["valid_split"], shuffle=True, random_state=args["seed"]
+            df, test_size=args["valid_split"],
+            shuffle=True, random_state=args["seed"]
         )
 
-        train_dataset = LandmarkDataset(dataframe=train, transform=aug_version_1(args, train=True))
-        valid_dataset = LandmarkDataset(dataframe=valid, transform=aug_version_1(args, train=True))
+        train_dataset = LandmarkDataset(
+            dataframe=train, transform=aug_version_1(args, train=True)
+            )
+        valid_dataset = LandmarkDataset(
+            dataframe=valid, transform=aug_version_1(args, train=True)
+            )
 
-        class_sample_count = np.unique(train_dataset.targets, return_counts=True)[1]
+        class_sample_count = np.unique(
+            train_dataset.targets, return_counts=True
+        )[1]
         weight = 1. / class_sample_count
         samples_weight = np.array([weight[t] for t in train_dataset.targets])
         samples_weight = torch.from_numpy(samples_weight)
-        samples_weigth = samples_weight.double()
-        sampler = WeightedRandomSampler(weights=samples_weight, num_samples=len(samples_weight))
+        samples_weight = samples_weight.double()
+        sampler = torch.utils.dataWeightedRandomSampler(
+            weights=samples_weight, num_samples=len(samples_weight)
+        )
 
         trainloader = torch.utils.data.DataLoader(
             train_dataset,
@@ -59,7 +68,9 @@ def main(run_name) -> None:
             num_classes=args["num_classes"],
         )
         model.to(device)
-        optimizer = torch.optim.Adam(model.parameters(), lr=args["lr"], weight_decay=args['decay'])
+        optimizer = torch.optim.Adam(
+            model.parameters(), lr=args["lr"], weight_decay=args['decay']
+        )
         loss_fn = criterion()
 
         best_loss = np.inf
@@ -107,7 +118,9 @@ def main(run_name) -> None:
                 }
             )
             print(
-                f"Epoch:{epoch+1} Train Loss:{train_loss:.4f} Valid Loss:{valid_loss:.4f} Train Acc:{train_acc:.4f} Valid Acc:{valid_acc:.4f} Train F1:{train_f1:.4f} Valid F1:{valid_f1:.4f} "
+                f"Epoch:{epoch+1} Train Loss:{train_loss:.4f} Valid Loss:{valid_loss:.4f} \
+                Train Acc:{train_acc:.4f} Valid Acc:{valid_acc:.4f} \
+                Train F1:{train_f1:.4f} Valid F1:{valid_f1:.4f} "
             )
 
             history['training_acc'].append(float(train_acc))
@@ -125,27 +138,31 @@ def main(run_name) -> None:
                 wandb.summary['best_validation_f1score'] = valid_f1
                 best_f1 = valid_f1
 
-
             if valid_loss < best_loss:
                 checkpoint = {
                     'model': model.state_dict(),
                     'optimizer': optimizer.state_dict(),
                     'epoch': epoch,
-                    'loss':valid_loss,
-                    'acc':best_acc,
-                    'f1score':best_f1,
+                    'loss': valid_loss,
+                    'acc': best_acc,
+                    'f1score': best_f1,
                 }
-                save_checkpoint_to_s3(checkpoint=checkpoint, checkpoint_name=f"{run_name}_e{epoch+1}")
-                print(f'Validation loss decreased from {best_loss:4f} to {valid_loss:.4f}')
+                save_checkpoint_to_s3(
+                    checkpoint=checkpoint,
+                    checkpoint_name=f"{run_name}_e{epoch+1}"
+                )
+                print(
+                    f'Validation loss decreased from \
+                    {best_loss:4f} to {valid_loss:.4f}'
+                )
                 wandb.summary['best_validation_loss'] = valid_loss
                 best_loss = valid_loss
 
-        artifact_to_s3(history, bucket=os.environ.get('S3_BUCKET'), key=f'run_artifacts/{run_name}')
+        artifact_to_s3(
+            history, bucket=os.environ.get('S3_BUCKET'),
+            key=f'run_artifacts/{run_name}'
+            )
+
 
 if __name__ == '__main__':
     main(run_name='VERSION_2')
-
-
-
-
-

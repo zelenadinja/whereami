@@ -39,7 +39,10 @@ def test_get_landmarks(num_images: int) -> None:
 
 @pytest.mark.parametrize("train", [True, False])
 def test_image_fpaths(train: bool) -> None:
-    "Test length, test that every image ends with .jpg, test that ever training image starts with train/ DIR and test image with test/ DIR"
+    """Test length, test that every image ends with .jpg,
+    test that ever training image starts with train/ DIR
+    and test image with test/ DIR
+    """
 
     image_fpaths = get_image_fpaths(dataframe=df, train=train)
 
@@ -54,7 +57,7 @@ def test_image_fpaths(train: bool) -> None:
 
 
 def test_label_encoder() -> None:
-    "Test that values are from 0 to num_classes - 1 and length of encoded class"
+    "Test that values are from 0 to num_classes -1 and length of encoded class"
 
     out = label_encoder(dataframe=df)
     encoder = out["la"]

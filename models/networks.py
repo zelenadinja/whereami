@@ -1,4 +1,3 @@
-
 import timm
 import torch.nn as nn
 import torch
@@ -6,9 +5,11 @@ import torch
 from models.utils import load_weights_from_s3
 
 
-class LandmarkResidual(nn.Module): # pylint: disable=too-few-public-methods
+class LandmarkResidual(nn.Module):
     """Resnet Models"""
-    def __init__(self, model: str = 'resnet18', pretrained: int = True, num_classes: int = 491) -> None:
+    def __init__(
+        self, model: str, pretrained: bool, num_classes: int
+    ) -> None:
         super().__init__()
 
         self.net = timm.create_model(model, pretrained=False)
@@ -22,7 +23,7 @@ class LandmarkResidual(nn.Module): # pylint: disable=too-few-public-methods
         self.pooling = nn.AdaptiveAvgPool2d(1)
         self.last_linear = nn.Linear(n_features, num_classes)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor: # pylint: disable=invalid-name
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         """forward pass through the data"""
         batch_size = x.size(0)
         features = self.net.forward_features(x)
@@ -30,4 +31,3 @@ class LandmarkResidual(nn.Module): # pylint: disable=too-few-public-methods
         output = self.last_linear(pooled_features)
 
         return output
-

@@ -31,8 +31,3 @@ class LandmarkDataset(Dataset):
         label = torch.tensor(self.targets[item_index], dtype=torch.long)
 
         return image, label
-
-
-
-
-
