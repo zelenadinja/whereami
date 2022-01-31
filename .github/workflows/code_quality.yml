@@ -11,7 +11,7 @@ jobs:
     - name: linting
       uses: alexanderdamiani/pylinter@v1.4.0
       with:
-        python-root: 'data/ dataset/ src/ models/'
+        python-root: '.'
         flake8-flags: '--count --show-source --statistics'
         mypy-flags: '--ignore-missing-imports'
         fail-on-isort: false
