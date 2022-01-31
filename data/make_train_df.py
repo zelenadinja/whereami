@@ -1,5 +1,3 @@
-"""Make a training dataframe"""
-
 import os
 
 import pandas as pd  # type: ignore
@@ -9,7 +7,6 @@ from src.utils import artifact_to_s3
 from data.utils import get_image_fpaths, get_landmark_ids, label_encoder
 
 if __name__ == "__main__":
-
 
     load_dotenv()
     S3_BUCKET = os.environ.get('S3_BUCKET')

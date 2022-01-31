@@ -1,6 +1,6 @@
 """Dataset for reading images"""
 
-from typing import Callable
+from typing import Callable, Tuple
 
 import pandas as pd
 import numpy as np
@@ -22,7 +22,9 @@ class LandmarkDataset(Dataset):
     def __len__(self) -> int:
         return len(self.image_paths)
 
-    def __getitem__(self, item_index: int) -> Tuple[torch.Tensor, torch.Tensor]:
+    def __getitem__(
+        self, item_index: int
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
 
         image_path = self.image_paths[item_index]
         image = read_image_s3(object_key=image_path)
