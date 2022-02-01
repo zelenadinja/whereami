@@ -75,7 +75,7 @@ def main(run_name) -> None:
         )
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
             optimizer, mode='min', factor=args['factor'],
-            patience= args['patience'], verbose=True,
+            patience=args['patience'], verbose=True,
         )
         loss_fn = criterion()
 

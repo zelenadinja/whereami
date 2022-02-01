@@ -93,7 +93,9 @@ def aug_version_3(config: dict, train: bool) -> Callable:
         )
     return albumentations.Compose(
         [
-            albumentations.CenterCrop(config['valid_size'], config['valid_size']),
+            albumentations.CenterCrop(
+                config['valid_size'], config['valid_size']
+            ),
             albumentations.Normalize(),
             ToTensorV2(),
         ]

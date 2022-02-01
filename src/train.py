@@ -9,7 +9,7 @@ from src.utils import AverageMeter
 def train_epoch(
         model, loader, optimizer, criterion,
         device, grad_accum, num_classes,
-         epoch, log_freq,
+        epoch, log_freq,
 
 ):
     """Forward  and backward pass"""
