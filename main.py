@@ -37,7 +37,7 @@ def main(run_name) -> None:
         valid_dataset = LandmarkDataset(
             dataframe=valid, transform=aug_version_1(args, train=True)
             )
-
+        #  weights for each sample in train dataset
         class_sample_count = np.unique(
             train_dataset.targets, return_counts=True
         )[1]
@@ -174,4 +174,3 @@ def main(run_name) -> None:
 
 if __name__ == '__main__':
     main(run_name='VERSION_3')
-
