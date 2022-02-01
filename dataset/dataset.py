@@ -27,7 +27,8 @@ class LandmarkDataset(Dataset):
     ) -> Tuple[torch.Tensor, torch.Tensor]:
 
         image_path = self.image_paths[item_index]
-        image = read_image_s3(object_key=image_path)
+        image = read_image_s3(image_path)
+
         if self.transform is not None:
             image = self.transform(image=image)['image']
         label = torch.tensor(self.targets[item_index], dtype=torch.long)

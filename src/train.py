@@ -8,13 +8,10 @@ from src.utils import AverageMeter
 
 def train_epoch(
         model, loader, optimizer, criterion,
-        device, grad_accum, num_classes,
-        epoch, log_freq,
-
+        device, num_classes, epoch, log_freq,
 ):
     """Forward  and backward pass"""
     model.train()
-    scaler = torch.cuda.amp.GradScaler()
 
     train_acc = torchmetrics.Accuracy().to(device)
     train_f1 = torchmetrics.F1Score(
@@ -36,15 +33,11 @@ def train_epoch(
 
         model.zero_grad(set_to_none=True)
 
-        with torch.cuda.amp.autocast():
-            outputs = model(images)
-            loss = criterion(outputs, labels)
-            loss = loss / grad_accum
+        outputs = model(images)
+        loss = criterion(outputs, labels)
 
-        scaler.scale(loss).backward()
-        if (batch_idx + 1) % grad_accum == 0:
-            scaler.step(optimizer)
-            scaler.update()
+        loss.backward()
+        optimizer.step()
 
         _, predictions = torch.max(outputs.detach(), dim=1)
         train_loss.update(loss.detach(), images.size(0))
@@ -71,7 +64,7 @@ def validate_epoch(
     model.eval()
 
     valid_acc = torchmetrics.Accuracy().to(device)
-    valid_f1 = torchmetrics.F1Score(
+    valid_f1 = torchmetrics.F1(
         num_classes=num_classes, average="weighted"
     ).to(device)
     valid_loss = AverageMeter()
@@ -90,8 +83,9 @@ def validate_epoch(
             images, labels = images.to(device), labels.to(device)
 
             outputs = model(images)
-            _, predictions = torch.max(outputs, dim=1)
             loss = criterion(outputs, labels)
+
+            _, predictions = torch.max(outputs, dim=1)
             valid_loss.update(loss, images.size(0))
             batch_acc = valid_acc(predictions, labels)
             batch_f1 = valid_f1(predictions, labels)

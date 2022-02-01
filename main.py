@@ -9,7 +9,7 @@ import wandb
 from dotenv import load_dotenv
 from sklearn.model_selection import train_test_split
 
-from dataset.augmentations import aug_version_1
+from dataset.augmentations import aug_version_0
 from dataset.dataset import LandmarkDataset
 from models.losses import criterion
 from models.networks import LandmarkResidual
@@ -23,36 +23,24 @@ def main(run_name) -> None:
     with wandb.init(project="landmarkrecognition", name=run_name):
 
         load_dotenv()
-        args = read_artifacts_s3(object_key=os.environ.get("CONFIG_VERSION_3"))
+        args = read_artifacts_s3(object_key=os.environ.get("VERSION_0"))
         set_seed(args["seed"])
         df = pd.read_csv(args["df_path"])
         train, valid = train_test_split(
-            df, test_size=args["valid_split"],
-            shuffle=True, random_state=args["seed"]
+            df, test_size=args["valid_split"], shuffle=True,
+            random_state=args["seed"], stratify=df['target'],
         )
 
         train_dataset = LandmarkDataset(
-            dataframe=train, transform=aug_version_1(args, train=True)
-            )
-        valid_dataset = LandmarkDataset(
-            dataframe=valid, transform=aug_version_1(args, train=True)
-            )
-        #  weights for each sample in train dataset
-        class_sample_count = np.unique(
-            train_dataset.targets, return_counts=True
-        )[1]
-        weight = 1. / class_sample_count
-        samples_weight = np.array([weight[t] for t in train_dataset.targets])
-        samples_weight = torch.from_numpy(samples_weight)
-        samples_weight = samples_weight.double()
-        sampler = torch.utils.data.WeightedRandomSampler(
-            weights=samples_weight, num_samples=len(samples_weight)
+            dataframe=train, transform=aug_version_0(args)
         )
-
+        valid_dataset = LandmarkDataset(
+            dataframe=valid, transform=aug_version_0(args)
+        )
         trainloader = torch.utils.data.DataLoader(
             train_dataset,
             batch_size=args["train_batch"],
-            sampler=sampler,
+            shuffle=True,
             num_workers=args['workers'],
             pin_memory=True,
         )
@@ -70,13 +58,7 @@ def main(run_name) -> None:
             num_classes=args["num_classes"],
         )
         model.to(device)
-        optimizer = torch.optim.Adam(
-            model.parameters(), lr=args["lr"], weight_decay=args['decay']
-        )
-        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-            optimizer, mode='min', factor=args['factor'],
-            patience=args['patience'], verbose=True,
-        )
+        optimizer = torch.optim.Adam(model.parameters(), lr=args["lr"],)
         loss_fn = criterion()
 
         best_loss = np.inf
@@ -98,7 +80,6 @@ def main(run_name) -> None:
                 trainloader,
                 optimizer,
                 loss_fn,
-                args['grad_accum'],
                 device,
                 args["num_classes"],
                 epoch + 1,
@@ -113,7 +94,6 @@ def main(run_name) -> None:
                 epoch + 1,
                 args["log_freq"],
             )
-            scheduler.step(valid_loss)
 
             wandb.log(
                 {
@@ -139,7 +119,7 @@ def main(run_name) -> None:
             history['validation_f1scores'].append(float(valid_f1))
 
             if valid_acc > best_acc:
-                wandb.summary['best_validation_accuracy'] = valid_loss
+                wandb.summary['best_validation_accuracy'] = valid_acc
                 best_acc = valid_acc
 
             if valid_f1 > best_f1:
@@ -160,7 +140,7 @@ def main(run_name) -> None:
                     checkpoint_name=f"{run_name}_e{epoch+1}"
                 )
                 print(
-                    f'Validation loss decreased from \
+                    f'Validation loss decreased from\
                     {best_loss:4f} to {valid_loss:.4f}'
                 )
                 wandb.summary['best_validation_loss'] = valid_loss
@@ -173,4 +153,4 @@ def main(run_name) -> None:
 
 
 if __name__ == '__main__':
-    main(run_name='VERSION_3')
+    main(run_name='VERSION_0')
