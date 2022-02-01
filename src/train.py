@@ -7,14 +7,16 @@ import torch
 
 def train_epoch(
         model, loader, optimizer, criterion,
-        device, num_classes, epoch, log_freq
+        device, grad_accum, num_classes,
+         epoch, log_freq,
+
 ):
     """Forward  and backward pass"""
-
     model.train()
+    scaler = torch.cuda.amp.GradScaler()
 
     train_acc = torchmetrics.Accuracy().to(device)
-    train_f1 = torchmetrics.F1(
+    train_f1 = torchmetrics.F1Score(
         num_classes=num_classes, average="weighted"
     ).to(device)
     train_loss = AverageMeter()
@@ -24,7 +26,7 @@ def train_epoch(
         unit="batches",
         position=0,
         leave=True,
-        desc=f"Training epoch:{epoch}",
+        desc=f"Training epoch {epoch}",
     )
 
     for batch_idx, (images, labels) in pbar:
@@ -32,12 +34,18 @@ def train_epoch(
         images, labels = images.to(device), labels.to(device)
 
         model.zero_grad(set_to_none=True)
-        outputs = model(images)
+
+        with torch.cuda.amp.autocast():
+            outputs = model(images)
+            loss = criterion(outputs, labels)
+            loss = loss / grad_accum
+
+        scaler.scale(loss).backward()
+        if (batch_idx + 1) % grad_accum == 0:
+            scaler.step(optimizer)
+            scaler.update()
+
         _, predictions = torch.max(outputs.detach(), dim=1)
-        loss = criterion(outputs, labels)
-        loss.backward()
-        optimizer.step()
-        loss = criterion(outputs, labels)
         train_loss.update(loss.detach(), images.size(0))
         batch_acc = train_acc(predictions, labels.detach())
         batch_f1 = train_f1(predictions, labels.detach())
@@ -62,7 +70,7 @@ def validate_epoch(
     model.eval()
 
     valid_acc = torchmetrics.Accuracy().to(device)
-    valid_f1 = torchmetrics.F1(
+    valid_f1 = torchmetrics.F1Score(
         num_classes=num_classes, average="weighted"
     ).to(device)
     valid_loss = AverageMeter()
@@ -72,7 +80,7 @@ def validate_epoch(
         unit="batches",
         position=0,
         leave=True,
-        desc=f"Validation epoch:{epoch}",
+        desc=f"Validation epoch {epoch}",
     )
 
     with torch.no_grad():

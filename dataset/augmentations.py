@@ -72,3 +72,29 @@ def aug_version_2(config: dict, train: bool) -> Callable:
             ToTensorV2(),
         ]
     )
+
+
+def aug_version_3(config: dict, train: bool) -> Callable:
+    """augmentations for version 2"""
+    if train:
+        return albumentations.Compose(
+            [
+                albumentations.Resize(
+                    config['train_size'], config['train_size'],
+                ),
+                albumentations.RandomCrop(
+                    config['crop_size'], config['crop_size']
+                ),
+                albumentations.Cutout(),
+                albumentations.HorizontalFlip(),
+                albumentations.Normalize(),
+                ToTensorV2(),
+            ]
+        )
+    return albumentations.Compose(
+        [
+            albumentations.CenterCrop(config['valid_size'], config['valid_size']),
+            albumentations.Normalize(),
+            ToTensorV2(),
+        ]
+    )

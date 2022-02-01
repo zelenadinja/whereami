@@ -23,7 +23,7 @@ def main(run_name) -> None:
     with wandb.init(project="landmarkrecognition", name=run_name):
 
         load_dotenv()
-        args = read_artifacts_s3(object_key=os.environ.get("CONFIG_VERSION_2"))
+        args = read_artifacts_s3(object_key=os.environ.get("CONFIG_VERSION_3"))
         set_seed(args["seed"])
         df = pd.read_csv(args["df_path"])
         train, valid = train_test_split(
@@ -45,7 +45,7 @@ def main(run_name) -> None:
         samples_weight = np.array([weight[t] for t in train_dataset.targets])
         samples_weight = torch.from_numpy(samples_weight)
         samples_weight = samples_weight.double()
-        sampler = torch.utils.dataWeightedRandomSampler(
+        sampler = torch.utils.data.WeightedRandomSampler(
             weights=samples_weight, num_samples=len(samples_weight)
         )
 
@@ -73,6 +73,10 @@ def main(run_name) -> None:
         optimizer = torch.optim.Adam(
             model.parameters(), lr=args["lr"], weight_decay=args['decay']
         )
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer, mode='min', factor=args['factor'],
+            patience= args['patience'], verbose=True,
+        )
         loss_fn = criterion()
 
         best_loss = np.inf
@@ -94,6 +98,7 @@ def main(run_name) -> None:
                 trainloader,
                 optimizer,
                 loss_fn,
+                args['grad_accum'],
                 device,
                 args["num_classes"],
                 epoch + 1,
@@ -108,7 +113,8 @@ def main(run_name) -> None:
                 epoch + 1,
                 args["log_freq"],
             )
-
+            scheduler.step(valid_loss)
+            
             wandb.log(
                 {
                     "train_epochs_losses": train_loss,
@@ -120,9 +126,9 @@ def main(run_name) -> None:
                 }
             )
             print(
-                f"Epoch:{epoch+1} Train Loss:{train_loss:.4f} Valid Loss:{valid_loss:.4f} \
-                Train Acc:{train_acc:.4f} Valid Acc:{valid_acc:.4f} \
-                Train F1:{train_f1:.4f} Valid F1:{valid_f1:.4f} "
+                f"Epoch:{epoch+1} Train Loss:{train_loss:.4f} Valid Loss:{valid_loss:.4f}\
+                Train Acc:{train_acc:.4f} Valid Acc:{valid_acc:.4f}\
+                Train F1:{train_f1:.4f} Valid F1:{valid_f1:.4f}"
             )
 
             history['training_acc'].append(float(train_acc))
@@ -167,4 +173,4 @@ def main(run_name) -> None:
 
 
 if __name__ == '__main__':
-    main(run_name='VERSION_2')
+    main(run_name='VERSION_3')
