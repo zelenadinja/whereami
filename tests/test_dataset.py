@@ -32,8 +32,7 @@ def test_pytorch_dataset(transform: Any) -> None:
     dataset = LandmarkDataset(dataframe=dataframe, transform=transform)
 
     assert len(dataset) == len(dataframe)
-    assert "images" in dataset[1000] and "labels" in dataset[10000]
     if transform is None:
-        assert isinstance(dataset[0]["images"], np.ndarray)
+        assert isinstance(dataset[0][0], np.ndarray)
     if transform is AUGMENTS:
-        assert isinstance(dataset[100]["images"], torch.Tensor)
+        assert isinstance(dataset[100][1], torch.Tensor)

@@ -59,7 +59,7 @@ def test_label_encoder() -> None:
     "Test that values are from 0 to num_classes -1 and length of encoded class"
 
     out = label_encoder(dataframe=df)
-    encoder = out["la"]
+    encoder = out["encoder"]
     encoded_column = out["encoded_target"]
 
     assert isinstance(out, dict)
