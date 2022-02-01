@@ -2,9 +2,9 @@ import os
 
 import pandas as pd  # type: ignore
 from dotenv import load_dotenv
-from src.utils import artifact_to_s3
 
 from data.utils import get_image_fpaths, get_landmark_ids, label_encoder
+from src.utils import artifact_to_s3
 
 if __name__ == "__main__":
 

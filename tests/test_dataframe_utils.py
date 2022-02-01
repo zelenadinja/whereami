@@ -1,13 +1,12 @@
 import os
 
-import pandas as pd
-from dotenv import load_dotenv
 import numpy as np
+import pandas as pd
 import pytest
 import sklearn.preprocessing as skp
+from dotenv import load_dotenv
 
-from data.utils import get_landmark_ids, get_image_fpaths, label_encoder
-
+from data.utils import get_image_fpaths, get_landmark_ids, label_encoder
 
 load_dotenv()  # read env vars
 

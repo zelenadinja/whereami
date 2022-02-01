@@ -1,15 +1,14 @@
 import io
 import os
-from typing import Optional
 import sys
+from typing import Optional
 
 import boto3
-from dotenv import load_dotenv
-from botocore.exceptions import ClientError
-import tqdm
 import torch
+import tqdm
 from boto3_type_annotations.s3 import Client
-
+from botocore.exceptions import ClientError
+from dotenv import load_dotenv
 
 load_dotenv()
 

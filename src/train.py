@@ -1,8 +1,9 @@
-import tqdm
-import torchmetrics
-import wandb
-from src.utils import AverageMeter
 import torch
+import torchmetrics
+import tqdm
+import wandb
+
+from src.utils import AverageMeter
 
 
 def train_epoch(
