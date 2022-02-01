@@ -114,7 +114,7 @@ def main(run_name) -> None:
                 args["log_freq"],
             )
             scheduler.step(valid_loss)
-            
+
             wandb.log(
                 {
                     "train_epochs_losses": train_loss,
@@ -174,3 +174,4 @@ def main(run_name) -> None:
 
 if __name__ == '__main__':
     main(run_name='VERSION_3')
+
