@@ -1,0 +1,33 @@
+#FROM ubuntu:20.04
+FROM nvidia/cuda:11.5.1-cudnn8-runtime-ubuntu20.04
+
+ENV PATH="/root/miniconda3/bin:${PATH}"
+ENV AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+ENV AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+ENV AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
+ENV WANDB_API_KEY=${WANDB_API_KEY}
+
+ARG PATH="/root/miniconda3/bin:${PATH}"
+
+
+RUN apt-get update \
+&& apt-get install -y python3-pip \
+wget 
+
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
+    && sh Miniconda3-latest-Linux-x86_64.sh -b \
+    && rm -f Miniconda3-latest-Linux-x86_64.sh
+
+WORKDIR whereami/
+COPY . . 
+
+RUN conda create -y -n landmark python=3.9
+
+SHELL ["conda", "run", "-n", "landmark", "/bin/bash", "-c"]
+
+
+RUN /bin/bash -c "source activate landmark" \
+    && pip3 install torch --no-cache-dir \
+    && pip3 install -r requirements.txt
+
+ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "landmark", "python3", "main.py"] 
