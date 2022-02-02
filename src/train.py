@@ -64,7 +64,7 @@ def validate_epoch(
     model.eval()
 
     valid_acc = torchmetrics.Accuracy().to(device)
-    valid_f1 = torchmetrics.F1(
+    valid_f1 = torchmetrics.F1Score(
         num_classes=num_classes, average="weighted"
     ).to(device)
     valid_loss = AverageMeter()

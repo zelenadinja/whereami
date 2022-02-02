@@ -85,6 +85,7 @@ def main(run_name) -> None:
                 epoch + 1,
                 args["log_freq"],
             )
+
             valid_loss, valid_acc, valid_f1 = validate_epoch(
                 model,
                 validloader,
@@ -106,7 +107,7 @@ def main(run_name) -> None:
                 }
             )
             print(
-                f"Epoch:{epoch+1} Train Loss:{train_loss:.4f} Valid Loss:{valid_loss:.4f}\
+                f"Epoch:{epoch+1}Train Loss:{train_loss:.4f} Valid Loss:{valid_loss:.4f}\
                 Train Acc:{train_acc:.4f} Valid Acc:{valid_acc:.4f}\
                 Train F1:{train_f1:.4f} Valid F1:{valid_f1:.4f}"
             )
