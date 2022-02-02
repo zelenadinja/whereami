@@ -9,7 +9,7 @@ import wandb
 from dotenv import load_dotenv
 from sklearn.model_selection import train_test_split
 
-from dataset.augmentations import aug_version_0
+from dataset.augmentations import aug_version_1
 from dataset.dataset import LandmarkDataset
 from models.losses import criterion
 from models.networks import LandmarkResidual
@@ -23,7 +23,7 @@ def main(run_name) -> None:
     with wandb.init(project="landmarkrecognition", name=run_name):
 
         load_dotenv()
-        args = read_artifacts_s3(object_key=os.environ.get("VERSION_0"))
+        args = read_artifacts_s3(object_key=os.environ.get("VERSION_1"))
         set_seed(args["seed"])
         df = pd.read_csv(args["df_path"])
         train, valid = train_test_split(
@@ -32,10 +32,10 @@ def main(run_name) -> None:
         )
 
         train_dataset = LandmarkDataset(
-            dataframe=train, transform=aug_version_0(args)
+            dataframe=train, transform=aug_version_1(args, train=True)
         )
         valid_dataset = LandmarkDataset(
-            dataframe=valid, transform=aug_version_0(args)
+            dataframe=valid, transform=aug_version_1(args, train=False)
         )
         trainloader = torch.utils.data.DataLoader(
             train_dataset,
@@ -154,4 +154,4 @@ def main(run_name) -> None:
 
 
 if __name__ == '__main__':
-    main(run_name='VERSION_0')
+    main(run_name='VERSION_1')
