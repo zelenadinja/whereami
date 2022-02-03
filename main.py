@@ -58,7 +58,7 @@ def main(run_name) -> None:
             num_classes=args["num_classes"],
         )
         model.to(device)
-        optimizer = torch.optim.Adam(model.parameters(), lr=args["lr"], weight_decay=args['decay'])
+        optimizer = torch.optim.Adam(model.parameters(), lr=args["lr"])
         loss_fn = criterion()
 
         best_loss = np.inf
