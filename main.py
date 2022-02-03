@@ -23,7 +23,7 @@ def main(run_name) -> None:
     with wandb.init(project="landmarkrecognition", name=run_name):
 
         load_dotenv()
-        args = read_artifacts_s3(object_key=os.environ.get("VERSION_1"))
+        args = read_artifacts_s3(object_key=os.environ.get("VERSION_2"))
         set_seed(args["seed"])
         df = pd.read_csv(args["df_path"])
         train, valid = train_test_split(
@@ -58,7 +58,7 @@ def main(run_name) -> None:
             num_classes=args["num_classes"],
         )
         model.to(device)
-        optimizer = torch.optim.Adam(model.parameters(), lr=args["lr"],)
+        optimizer = torch.optim.Adam(model.parameters(), lr=args["lr"], weight_decay=args['decay'])
         loss_fn = criterion()
 
         best_loss = np.inf
@@ -154,4 +154,4 @@ def main(run_name) -> None:
 
 
 if __name__ == '__main__':
-    main(run_name='VERSION_1')
+    main(run_name='VERSION_2')
