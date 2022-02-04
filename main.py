@@ -23,7 +23,7 @@ def main(run_name) -> None:
     with wandb.init(project="landmarkrecognition", name=run_name):
 
         load_dotenv()
-        args = read_artifacts_s3(object_key=os.environ.get("VERSION_3"))
+        args = read_artifacts_s3(object_key=os.environ.get("VERSION_4"))
         set_seed(args["seed"])
         df = pd.read_csv(args["df_path"])
         train, valid = train_test_split(
@@ -107,7 +107,7 @@ def main(run_name) -> None:
                 }
             )
             print(
-                f"Epoch:{epoch+1}Train Loss:{train_loss:.4f} Valid Loss:{valid_loss:.4f}\
+                f"Epoch:{epoch+1}   Train Loss:{train_loss:.4f} Valid Loss:{valid_loss:.4f}\
                 Train Acc:{train_acc:.4f} Valid Acc:{valid_acc:.4f}\
                 Train F1:{train_f1:.4f} Valid F1:{valid_f1:.4f}"
             )
@@ -154,4 +154,4 @@ def main(run_name) -> None:
 
 
 if __name__ == '__main__':
-    main(run_name='VERSION_3')
+    main(run_name='VERSION_4')

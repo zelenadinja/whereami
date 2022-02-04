@@ -14,7 +14,7 @@ def train_epoch(
     model.train()
 
     train_acc = torchmetrics.Accuracy().to(device)
-    train_f1 = torchmetrics.F1Score(
+    train_f1 = torchmetrics.F1(
         num_classes=num_classes, average="weighted"
     ).to(device)
     train_loss = AverageMeter()
@@ -58,13 +58,13 @@ def train_epoch(
 
 def validate_epoch(
         model, loader, criterion, device, num_classes, epoch, log_freq
-):  # pylint: disable=too-many-arguments
+):
     """forward pass"""
 
     model.eval()
 
     valid_acc = torchmetrics.Accuracy().to(device)
-    valid_f1 = torchmetrics.F1Score(
+    valid_f1 = torchmetrics.F1(
         num_classes=num_classes, average="weighted"
     ).to(device)
     valid_loss = AverageMeter()

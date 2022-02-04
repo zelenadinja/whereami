@@ -7,6 +7,7 @@ import sklearn.preprocessing as skp
 from dotenv import load_dotenv
 
 from data.utils import get_image_fpaths, get_landmark_ids, label_encoder
+from src.utils import read_artifacts_s3
 
 load_dotenv()  # read env vars
 
@@ -68,3 +69,27 @@ def test_label_encoder() -> None:
     assert list(encoder.classes_) == df["landmark_id"].unique().tolist()
     assert min(encoded_column) == 0
     assert max(encoded_column) == df["landmark_id"].nunique() - 1
+
+
+def test_cat2target():
+    """Test our jsons files for categories
+    """
+    train_df = pd.read_csv(os.environ.get('PROCESSED_TRAIN_CSV'))
+    df = pd.read_csv(os.environ.get('LANDMARK2CAT'))
+    df = df[df['landmark_id'].isin(train_df['landmark_id'].unique().tolist())]
+    df['category_'] = df['category'].apply(lambda x: x.split('Category:')[1])
+
+    cat2land = read_artifacts_s3('category2landmark.json')
+    cat2tar = read_artifacts_s3('category2target.json')
+
+    for key, val in cat2land.items():
+        # assert that  every category from df and json have same landmark id
+        assert df[df['category_'] == key]['landmark_id'].item() == val
+
+    for key, val in cat2tar.items():
+        # First match by landmark ids then by encoded landmark
+
+        landmark = df[df['category_'] == key]['landmark_id'].item()
+        assert train_df[
+            train_df.landmark_id == landmark
+            ]['target'].unique().item() == val
