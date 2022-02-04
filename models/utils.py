@@ -79,3 +79,26 @@ def save_checkpoint_to_s3(
     except ClientError:
         return None
     return True
+
+
+def load_checkpoint_weights(object_key, device):
+    """Loads weights from model for prediction"""
+
+    s3client = boto3.client('s3')
+    buffer = io.BytesIO()
+
+    try:
+        s3client.download_fileobj(
+            os.environ.get('S3_BUCKET'),
+            object_key,
+            buffer,
+        )
+        buffer.seek(0)
+        check = torch.load(buffer, map_location=torch.device(device))
+        weights = check['model']
+
+        return weights
+    except ClientError:
+        return None
+
+

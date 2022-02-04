@@ -8,6 +8,7 @@ import torch
 import wandb
 from dotenv import load_dotenv
 from sklearn.model_selection import train_test_split
+from transformers import get_cosine_schedule_with_warmup
 
 from dataset.augmentations import aug_version_1
 from dataset.dataset import LandmarkDataset
@@ -23,7 +24,7 @@ def main(run_name) -> None:
     with wandb.init(project="landmarkrecognition", name=run_name):
 
         load_dotenv()
-        args = read_artifacts_s3(object_key=os.environ.get("VERSION_4"))
+        args = read_artifacts_s3(object_key=os.environ.get("VERSION_5"))
         set_seed(args["seed"])
         df = pd.read_csv(args["df_path"])
         train, valid = train_test_split(
@@ -59,6 +60,12 @@ def main(run_name) -> None:
         )
         model.to(device)
         optimizer = torch.optim.Adam(model.parameters(), lr=args["lr"])
+
+        training_steps = len(trainloader)
+        scheduler = get_cosine_schedule_with_warmup(
+            num_warmup_steps = training_steps * args['warmup_epochs'],
+            num_training_steps = training_steps * args['num_epochs'],
+        )
         loss_fn = criterion()
 
         best_loss = np.inf
@@ -72,8 +79,10 @@ def main(run_name) -> None:
         history['validation_acc'] = list()
         history['validation_losses'] = list()
         history['validation_f1scores'] = list()
+        history['lr'] = list()
 
         for epoch in range(args["num_epochs"]):
+
 
             train_loss, train_acc, train_f1 = train_epoch(
                 model,
@@ -85,6 +94,8 @@ def main(run_name) -> None:
                 epoch + 1,
                 args["log_freq"],
             )
+            lr = float(optimizer.param_groups[0]['lr'])
+            print(f'Current learning rate:{lr}')
 
             valid_loss, valid_acc, valid_f1 = validate_epoch(
                 model,
@@ -95,6 +106,7 @@ def main(run_name) -> None:
                 epoch + 1,
                 args["log_freq"],
             )
+            scheduler.step()
 
             wandb.log(
                 {
@@ -118,6 +130,7 @@ def main(run_name) -> None:
             history['validation_acc'].append(float(valid_acc))
             history['validation_losses'].append(float(valid_loss))
             history['validation_f1scores'].append(float(valid_f1))
+            history['lr'].append(lr)
 
             if valid_acc > best_acc:
                 wandb.summary['best_validation_accuracy'] = valid_acc
@@ -154,4 +167,4 @@ def main(run_name) -> None:
 
 
 if __name__ == '__main__':
-    main(run_name='VERSION_4')
+    main(run_name='VERSION_5')
