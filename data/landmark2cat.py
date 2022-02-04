@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 
 from src.utils import artifact_to_s3
 
-
 if __name__ == '__main__':
 
     load_dotenv()
