@@ -27,12 +27,15 @@ if __name__ == '__main__':
         )
     }
 
-    artifact_to_s3(
-        object_=category2target, bucket=os.environ.get('S3_BUCKET'),
-        key='category2target', extension='json', verbose=True
-    )
+    S3_BUCKET = os.environ.get('S3_BUCKET')
+    if S3_BUCKET:
+        
+        artifact_to_s3(
+            object_=category2target, bucket=S3_BUCKET,
+            key='category2target', extension='json', verbose=True
+        )
 
-    artifact_to_s3(
-        object_=category2landmark, bucket=os.environ.get('S3_BUCKET'),
-        key='category2landmark', extension='json', verbose=True
-    )
+        artifact_to_s3(
+            object_=category2landmark, bucket=S3_BUCKET,
+            key='category2landmark', extension='json', verbose=True
+        )
