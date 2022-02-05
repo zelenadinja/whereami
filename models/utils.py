@@ -13,8 +13,20 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def load_weights_from_s3(model_name: str) -> dict:
-    """Load weights from S3 Bucket"""
+def load_weights_from_s3(weights_object_key: str) -> dict:
+    """Load weights from S3 Bucket
+
+    Parameters
+    ----------
+
+    weights_object_key: str
+        object key of weights on S3 Bucket
+
+
+    Returns weights
+        dict containing weights for model
+
+    """
 
     bucket = os.environ.get("S3_BUCKET")
     s3_client: Client = boto3.client("s3")
@@ -22,12 +34,12 @@ def load_weights_from_s3(model_name: str) -> dict:
         filesize = int(
             s3_client.head_object(
                 Bucket="landmarkdataset",
-                Key=f"pretrainedweights/{model_name}.pth"
+                Key=weights_object_key
             )["ResponseMetadata"]["HTTPHeaders"]["content-length"]
         )
     except ClientError:
         raise ValueError(
-            f"Weights for {model_name} does not exist on S3 Bucket."
+            f"Weights for {weights_object_key.split('/')[1].split('.')[0]} does not exist on S3 Bucket."
             )
 
     try:
@@ -41,7 +53,7 @@ def load_weights_from_s3(model_name: str) -> dict:
         ) as pbar:
             s3_client.download_fileobj(
                 Bucket=bucket,
-                Key=f"pretrainedweights/{model_name}.pth",
+                Key=weights_object_key,
                 Fileobj=buffer,
                 Callback=lambda bytes_: pbar.update(bytes_),
             )
@@ -79,26 +91,3 @@ def save_checkpoint_to_s3(
     except ClientError:
         return None
     return True
-
-
-def load_checkpoint_weights(object_key, device):
-    """Loads weights from model for prediction"""
-
-    s3client = boto3.client('s3')
-    buffer = io.BytesIO()
-
-    try:
-        s3client.download_fileobj(
-            os.environ.get('S3_BUCKET'),
-            object_key,
-            buffer,
-        )
-        buffer.seek(0)
-        check = torch.load(buffer, map_location=torch.device(device))
-        weights = check['model']
-
-        return weights
-    except ClientError:
-        return None
-
-

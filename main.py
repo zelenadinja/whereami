@@ -55,17 +55,12 @@ def main(run_name) -> None:
         device = torch.device(args["device"])
         model = LandmarkResidual(
             model=args["model"],
-            pretrained=args["pretrained"],
+            weights_object_key=args["pretrained_path"],
             num_classes=args["num_classes"],
         )
         model.to(device)
         optimizer = torch.optim.Adam(model.parameters(), lr=args["lr"])
 
-        training_steps = len(trainloader)
-        scheduler = get_cosine_schedule_with_warmup(
-            num_warmup_steps = training_steps * args['warmup_epochs'],
-            num_training_steps = training_steps * args['num_epochs'],
-        )
         loss_fn = criterion()
 
         best_loss = np.inf
@@ -83,7 +78,6 @@ def main(run_name) -> None:
 
         for epoch in range(args["num_epochs"]):
 
-
             train_loss, train_acc, train_f1 = train_epoch(
                 model,
                 trainloader,
@@ -94,8 +88,6 @@ def main(run_name) -> None:
                 epoch + 1,
                 args["log_freq"],
             )
-            lr = float(optimizer.param_groups[0]['lr'])
-            print(f'Current learning rate:{lr}')
 
             valid_loss, valid_acc, valid_f1 = validate_epoch(
                 model,
@@ -106,6 +98,10 @@ def main(run_name) -> None:
                 epoch + 1,
                 args["log_freq"],
             )
+
+            lr = float(optimizer.param_groups[0]['lr'])
+            print(f'Current learning rate:{lr}')
+
             scheduler.step()
 
             wandb.log(

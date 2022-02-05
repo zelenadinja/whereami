@@ -1,3 +1,5 @@
+from typing import Optional
+
 import timm
 import torch
 import torch.nn as nn
@@ -8,13 +10,13 @@ from models.utils import load_weights_from_s3
 class LandmarkResidual(nn.Module):
     """Resnet Models"""
     def __init__(
-        self, model: str, pretrained: bool, num_classes: int
+        self, model: str, weights_object_key: Optional[str], num_classes: int
     ) -> None:
         super().__init__()
 
         self.net = timm.create_model(model, pretrained=False)
-        if pretrained:
-            weights = load_weights_from_s3(model_name=model)
+        if weights_object_key:
+            weights = load_weights_from_s3(weights_object_key=weights_object_key)
             self.net.load_state_dict(weights)
 
         n_features = self.net.fc.in_features

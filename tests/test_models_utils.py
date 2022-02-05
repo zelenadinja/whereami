@@ -7,9 +7,9 @@ import timm
 from models.utils import load_weights_from_s3
 
 
-@pytest.mark.parametrize("model_name", ["resnet26", "resnet34", "resnet50"])
+@pytest.mark.parametrize("weights_object_key", ["pretrainedweights/resnet26", "pretrainedweights/resnet34", "pretrainedweights/resnet50"])
 @pytest.mark.parametrize("pretrained", [True, False])
-def test_weights_load(model_name: str, pretrained: bool) -> None:
+def test_weights_load(weights_object_key: str, pretrained: bool) -> None:
     """Test that weights from pretrained models matches"""
     weights: Optional[dict] = load_weights_from_s3(model_name=model_name)
     resnet = timm.create_model(model_name=model_name, pretrained=pretrained)
