@@ -126,7 +126,7 @@ def _upload_file_obj(
     return True
 
 
-def read_image_s3(object_key: str) -> npt.NDArray[np.uint8]:
+def read_image_s3(object_key: str, bucket_name: str) -> npt.NDArray[np.uint8]:
     """Read image from S3 Bucket into numpy array
     Parameters
     ----------
@@ -134,6 +134,7 @@ def read_image_s3(object_key: str) -> npt.NDArray[np.uint8]:
     object_key: str
         Object key on S3 Bucket with all sub-DIRs
          example: train/0/0/0/023132101.jpg
+    bucket_name: str 
 
     Returns:
         np_image: np.ndarray
@@ -141,7 +142,6 @@ def read_image_s3(object_key: str) -> npt.NDArray[np.uint8]:
     """
 
     s3_resource: ServiceResource = boto3.resource('s3')
-    bucket_name = os.environ.get('S3_BUCKET')
     try:
         image_body = s3_resource.Object(bucket_name, object_key).get()['Body']
         image = Image.open(image_body)

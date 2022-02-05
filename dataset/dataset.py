@@ -9,7 +9,6 @@ from torch.utils.data import Dataset
 
 from src.utils import read_image_s3
 
-
 class LandmarkDataset(Dataset):
     """Pytorch dataset class for landmark dataframe"""
 
@@ -26,8 +25,11 @@ class LandmarkDataset(Dataset):
         self, item_index: int
     ) -> Tuple[torch.Tensor, torch.Tensor]:
 
-        image_path = self.image_paths[item_index]
-        image = read_image_s3(image_path)
+        image_path = self.images[item_index]
+        image = read_image_s3(
+            object_key=image_path,
+            bucket_name='landmarkdataset'
+        )
 
         if self.transform is not None:
             image = self.transform(image=image)['image']

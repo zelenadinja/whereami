@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
     S3_BUCKET = os.environ.get('S3_BUCKET')
     if S3_BUCKET:
-        
+
         artifact_to_s3(
             object_=category2target, bucket=S3_BUCKET,
             key='category2target', extension='json', verbose=True

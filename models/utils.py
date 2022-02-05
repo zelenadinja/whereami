@@ -39,7 +39,7 @@ def load_weights_from_s3(weights_object_key: str) -> dict:
         )
     except ClientError:
         raise ValueError(
-            f"Weights for {weights_object_key.split('/')[1].split('.')[0]} does not exist on S3 Bucket."
+            "Weights does not exist on S3 Bucket."
             )
 
     try:

@@ -16,7 +16,9 @@ class LandmarkResidual(nn.Module):
 
         self.net = timm.create_model(model, pretrained=False)
         if weights_object_key:
-            weights = load_weights_from_s3(weights_object_key=weights_object_key)
+            weights = load_weights_from_s3(
+                weights_object_key=weights_object_key
+            )
             self.net.load_state_dict(weights)
 
         n_features = self.net.fc.in_features
