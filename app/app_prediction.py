@@ -9,7 +9,10 @@ from src.utils import read_artifacts_s3
 from dataset.augmentations import aug_version_1
 
 load_dotenv()
-args = read_artifacts_s3(object_key=os.environ.get('VERSION_1'))
+ARGS_PATH = os.environ.get('VERSION_1')
+
+if ARGS_PATH:
+    args = read_artifacts_s3(ARGS_PATH)
 
 
 def get_prediction(model, image):

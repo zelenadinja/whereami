@@ -15,19 +15,26 @@ from models.utils import load_weights_from_s3
 
 load_dotenv()
 app = Flask(__name__)
-TARGET2CATEGORY= read_artifacts_s3(object_key='target2category.json')
 
 S3CLIENT = boto3.client('s3')
+
+TARGET2CATEGORY= read_artifacts_s3(object_key='target2category.json')
+API_MODEL_NAME = os.environ.get('API_MODEL')
+API_WEIGHTS_KEY = os.environ.get('API_WEIGHTS')
 BUCKET_NAME = os.environ.get('S3_BUCKET_INPUTS')
+NUM_CLASSES = int(os.environ.get('NUM_CLASSES'))
+
+
 MODEL = LandmarkResidual(
-    model=os.environ.get('API_MODEL'),
+    model=API_MODEL_NAME,
     weights_object_key=None,
-    num_classes=int(os.environ.get('NUM_CLASSES')),
+    num_classes=NUM_CLASSES,
 )
 WEIGHTS = load_weights_from_s3(
-    weights_object_key=os.environ.get('API_WEIGHTS'),
+    weights_object_key=API_WEIGHTS_KEY,
 )
-MODEL.load_state_dict(WEIGHTS)
+if API_WEIGHTS_KEY:
+    MODEL.load_state_dict(WEIGHTS)
 
 
 @app.route('/', methods=['GET', 'POST'])

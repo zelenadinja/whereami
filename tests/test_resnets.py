@@ -12,7 +12,7 @@ def test_output_of_network() -> None:
     resnet50 = timm.create_model('resnet50', True)
     custom_resnet50 = LandmarkResidual(
         model='resnet50', num_classes=1000,
-        pretrained_path='pretrainedweights/resnet50.pth'
+        weights_object_key='pretrainedweights/resnet50.pth'
     )
     data = torch.randn(8, 3, 300, 300)
     features = resnet50.forward_features(data)
