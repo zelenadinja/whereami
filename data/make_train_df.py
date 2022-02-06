@@ -9,8 +9,8 @@ from src.utils import artifact_to_s3
 if __name__ == "__main__":
 
     load_dotenv()
-    S3_BUCKET = os.environ.get('S3_BUCKET')
-    DF = pd.read_csv(os.environ.get("TRAIN_CSV"))
+    S3_BUCKET = os.environ['S3_BUCKET']
+    DF = pd.read_csv(os.environ["TRAIN_CSV"])
     DF["object_key"] = get_image_fpaths(dataframe=DF, train=True)
     LANDMARKS = get_landmark_ids(dataframe=DF, num_images=200)
     USED_LANDMARKS = LANDMARKS["used_landmarks"]
@@ -27,33 +27,32 @@ if __name__ == "__main__":
     LABEL_ENCODER = ENC["encoder"]
 
     # Save artifacts
-    if S3_BUCKET is not None:
-        artifact_to_s3(
-            object_=LABEL_ENCODER,
-            bucket=S3_BUCKET,
-            key="label_encoder",
-            extension="pkl",
-        )
-        artifact_to_s3(
-            object_=USED_LANDMARKS,
-            bucket=S3_BUCKET,
-            key="df_artifacts/used_landmarks",
-        )
-        artifact_to_s3(
-            object_=NOT_USED_LANDMARKS,
-            bucket=S3_BUCKET,
-            key="df_artifacts/not_used_landmarks",
-        )
-        artifact_to_s3(
-            object_=USED_OBJECT_KEYS,
-            bucket=S3_BUCKET,
-            key="df_artifacts/used_object_keys",
-        )
-        artifact_to_s3(
-            object_=NOT_USED_OBJECT_KEYS,
-            bucket=S3_BUCKET,
-            key="df_artifacts/not_used_object_keys",
-        )
+    artifact_to_s3(
+        object_=LABEL_ENCODER,
+        bucket=S3_BUCKET,
+        key="label_encoder",
+        extension="pkl",
+    )
+    artifact_to_s3(
+        object_=USED_LANDMARKS,
+        bucket=S3_BUCKET,
+        key="df_artifacts/used_landmarks",
+    )
+    artifact_to_s3(
+        object_=NOT_USED_LANDMARKS,
+        bucket=S3_BUCKET,
+        key="df_artifacts/not_used_landmarks",
+    )
+    artifact_to_s3(
+        object_=USED_OBJECT_KEYS,
+        bucket=S3_BUCKET,
+        key="df_artifacts/used_object_keys",
+    )
+    artifact_to_s3(
+        object_=NOT_USED_OBJECT_KEYS,
+        bucket=S3_BUCKET,
+        key="df_artifacts/not_used_object_keys",
+    )
 
     # Uplaod csv to S3
-    DF.to_csv(os.environ.get("PROCESSED_TRAIN_CSV"), index=False)
+    DF.to_csv(os.environ["PROCESSED_TRAIN_CSV"], index=False)

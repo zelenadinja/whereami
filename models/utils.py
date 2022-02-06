@@ -28,7 +28,7 @@ def load_weights_from_s3(weights_object_key: str) -> dict:
 
     """
 
-    bucket = os.environ.get("S3_BUCKET")
+    bucket = os.environ["S3_BUCKET"]
     s3_client: Client = boto3.client("s3")
     try:
         filesize = int(
@@ -67,7 +67,19 @@ def load_weights_from_s3(weights_object_key: str) -> dict:
 def save_checkpoint_to_s3(
     checkpoint: dict, checkpoint_name: str
 ) -> Optional[bool]:
-    """Save training checkpoint directly to S3 Bucket"""
+    """Save training checkpoint directly to S3 Bucket
+
+    Parameters
+
+    checkpoint: dict
+        parameters to save
+
+    checkpoint_name: str
+        checkpoint object key for S3 Bucket
+
+        Returns True if uploaded to Bucket
+    ----------
+    """
 
     s3client: Client = boto3.client("s3")
     buffer = io.BytesIO()

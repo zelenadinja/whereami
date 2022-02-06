@@ -134,7 +134,7 @@ def read_image_s3(object_key: str, bucket_name: str) -> npt.NDArray[np.uint8]:
     object_key: str
         Object key on S3 Bucket with all sub-DIRs
          example: train/0/0/0/023132101.jpg
-    bucket_name: str 
+    bucket_name: str
 
     Returns:
         np_image: np.ndarray
@@ -165,7 +165,7 @@ def read_artifacts_s3(object_key: str) -> Any:
 
     """
     s3_resource: ServiceResource = boto3.resource('s3')
-    bucket = os.environ.get('S3_BUCKET')
+    bucket = os.environ['S3_BUCKET']
     try:
         obj = s3_resource.Object(bucket, object_key)
     except ClientError:

@@ -12,15 +12,15 @@ if __name__ == "__main__":
 
     load_dotenv()
 
-    DF = pd.read_csv(os.environ.get("PROCESSED_TRAIN_CSV"))
+    DF = pd.read_csv(os.environ["PROCESSED_TRAIN_CSV"])
     DF_OBJECT_KEYS = np.array(DF["object_key"])
-
+    S3_BUCKET = os.environ['S3_BUCKET']
     S3CLIENT = boto3.client("s3")
     S3_OBJECT_KEYS = []
     OBJS = [
         obj["Key"]
         for obj in S3CLIENT.list_objects_v2(
-            Bucket="landmarkdataset", Prefix="train"
+            Bucket=S3_BUCKET, Prefix="train"
             )["Contents"]
     ]
     S3_OBJECT_KEYS.append(OBJS)

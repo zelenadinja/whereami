@@ -8,6 +8,8 @@ from src.utils import artifact_to_s3
 if __name__ == '__main__':
 
     load_dotenv()
+    S3_BUCKET = os.environ['S3_BUCKET']
+    
     categories = pd.read_csv(os.environ.get('LANDMARK2CAT'))
     categories['category_'] = categories['category'].apply(
         lambda cat: cat.split('Category:')[1]
@@ -26,15 +28,12 @@ if __name__ == '__main__':
         )
     }
 
-    S3_BUCKET = os.environ.get('S3_BUCKET')
-    if S3_BUCKET:
+    artifact_to_s3(
+        object_=category2target, bucket=S3_BUCKET,
+        key='category2target', extension='json', verbose=True
+    )
 
-        artifact_to_s3(
-            object_=category2target, bucket=S3_BUCKET,
-            key='category2target', extension='json', verbose=True
-        )
-
-        artifact_to_s3(
-            object_=category2landmark, bucket=S3_BUCKET,
-            key='category2landmark', extension='json', verbose=True
-        )
+    artifact_to_s3(
+        object_=category2landmark, bucket=S3_BUCKET,
+        key='category2landmark', extension='json', verbose=True
+    )
