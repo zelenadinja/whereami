@@ -20,21 +20,25 @@ S3CLIENT = boto3.client('s3')
 
 TARGET2CATEGORY= read_artifacts_s3(object_key='target2category.json')
 API_MODEL_NAME = os.environ.get('API_MODEL')
+assert API_MODEL_NAME is not None
 API_WEIGHTS_KEY = os.environ.get('API_WEIGHTS')
+assert API_WEIGHTS_KEY is not None
 BUCKET_NAME = os.environ.get('S3_BUCKET_INPUTS')
+assert BUCKET_NAME is not None
 NUM_CLASSES = int(os.environ.get('NUM_CLASSES'))
-
+assert NUM_CLASSES is not None
 
 MODEL = LandmarkResidual(
     model=API_MODEL_NAME,
     weights_object_key=None,
     num_classes=NUM_CLASSES,
 )
+
 WEIGHTS = load_weights_from_s3(
     weights_object_key=API_WEIGHTS_KEY,
 )
-if API_WEIGHTS_KEY:
-    MODEL.load_state_dict(WEIGHTS)
+
+MODEL.load_state_dict(WEIGHTS)
 
 
 @app.route('/', methods=['GET', 'POST'])
