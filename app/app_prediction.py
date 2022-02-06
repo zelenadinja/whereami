@@ -1,12 +1,12 @@
 import os
 
-from dotenv import load_dotenv
 import numpy as np
 import torch
 import torch.nn.functional as F
+from dotenv import load_dotenv
 
-from src.utils import read_artifacts_s3
 from dataset.augmentations import aug_version_1
+from src.utils import read_artifacts_s3
 
 load_dotenv()
 ARGS_PATH = os.environ.get('VERSION_1')

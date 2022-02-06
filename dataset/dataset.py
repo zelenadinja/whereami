@@ -9,6 +9,7 @@ from torch.utils.data import Dataset
 
 from src.utils import read_image_s3
 
+
 class LandmarkDataset(Dataset):
     """Pytorch dataset class for landmark dataframe"""
 

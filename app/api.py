@@ -3,15 +3,13 @@
 import os
 
 import boto3
-from flask import request
-from flask import Flask
-from flask import render_template
 from dotenv import load_dotenv
+from flask import Flask, render_template, request
 
-from src.utils import read_image_s3, read_artifacts_s3
 from app.app_prediction import get_prediction
 from models.networks import LandmarkResidual
 from models.utils import load_weights_from_s3
+from src.utils import read_artifacts_s3, read_image_s3
 
 load_dotenv()
 app = Flask(__name__)
