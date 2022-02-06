@@ -24,7 +24,7 @@ def main(run_name) -> None:
     with wandb.init(project="landmarkrecognition", name=run_name):
 
         load_dotenv()
-        args = read_artifacts_s3(object_key=os.environ.get("VERSION_6"))
+        args = read_artifacts_s3(object_key=os.environ["VERSION_7"])
         set_seed(args["seed"])
         df = pd.read_csv(args["df_path"])
         train, valid = train_test_split(
@@ -158,10 +158,10 @@ def main(run_name) -> None:
                 best_loss = valid_loss
 
         artifact_to_s3(
-            history, bucket=os.environ.get('S3_BUCKET'),
+            history, bucket=os.environ['S3_BUCKET'],
             key=f'run_artifacts/{run_name}'
             )
 
 
 if __name__ == '__main__':
-    main(run_name='VERSION_6')
+    main(run_name='VERSION_7')

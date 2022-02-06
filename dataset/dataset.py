@@ -26,7 +26,7 @@ class LandmarkDataset(Dataset):
         self, item_index: int
     ) -> Tuple[torch.Tensor, torch.Tensor]:
 
-        image_path = self.images[item_index]
+        image_path = self.image_paths[item_index]
         image = read_image_s3(
             object_key=image_path,
             bucket_name='landmarkdataset'
