@@ -45,11 +45,22 @@ def upload_predict():
                 object_key=file.filename,
                 bucket_name=BUCKET_NAME,
             )
-            prediction = get_prediction(model=MODEL, image=image)
-            label = TARGET2CATEGORY[str(prediction)]
+            confidence, predictions = get_prediction(model=MODEL, image=image)
+
+            label1 = TARGET2CATEGORY[str(predictions[0].item())]
+            label2 = TARGET2CATEGORY[str(predictions[1].item())]
+            label3 = TARGET2CATEGORY[str(predictions[2].item())]
+            conf1 = round(confidence[0].item(), 2)
+            conf2 = round(confidence[1].item(), 2)
+            conf3 = round(confidence[2].item(), 2)
+
+            labels = (label1, label2, label3)
+            confs = (conf1, conf2, conf3)
+
             return render_template(
                 'index.html',
-                prediction=label,
+                labels=labels,
+                confidences = confs,
                 image_loc=file.filename
             )
     return render_template('index.html', prediction=0, image_loc=None)
@@ -57,4 +68,4 @@ def upload_predict():
 
 if __name__ == '__main__':
 
-    app.run(port=12000, debug=False)
+    app.run(host='0.0.0.0', port=5000)

@@ -26,17 +26,16 @@
       <br>
       <br>
       {% if image_loc %}
-      <img class="mb-4" src="https://whereami-user-inputs.s3.eu-central-1.amazonaws.com/{{image_loc}}" alt=""   border="1" width="320" height="320">
+      <img class="mb-4" src="https://whereami-user-inputs.s3.eu-central-1.amazonaws.com/{{image_loc}}" alt=""   border="1" width="286" height="286">
       <br>
-      <h3 class="h3 mb-3 font-weight-normal">{{prediction}}</h3>
+      <h3 class="h3 mb-3 font-weight-normal">Top 3 predictions with confidence scores</h3>
+      <h6> {{labels[0]}} : {{confidences[0]}} </h6>
+      <h6> {{labels[1]}} : {{confidences[1]}} </h6>
+      <h6> {{labels[2]}} : {{confidences[2]}} </h6>
       {%endif%}
-
       <br>
-      <br>
-      <br>
-
       <p class="mt-5 mb-3 text-muted">
-        <a href="https://raw.githubusercontent.com/zelenadinja/whereami/main/targets.csv">SUPPORTED LANDMARKS</a>
+        <a href="https://raw.githubusercontent.com/zelenadinja/whereami/main/targets.txt">SUPPORTED LANDMARKS</a>
       </p>
     </form>
   </body>
