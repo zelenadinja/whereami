@@ -62,7 +62,7 @@ def test_reading_images() -> None:
     random_keys = np.random.choice(object_keys, size=30)
 
     for i in random_keys:
-        img = read_image_s3(object_key=i)
+        img = read_image_s3(object_key=i, bucket_name='landmarkdataset')
         assert isinstance(img, np.ndarray)
 
     with pytest.raises(ValueError):
