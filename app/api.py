@@ -16,7 +16,7 @@ app = Flask(__name__)
 
 S3CLIENT = boto3.client('s3')
 
-TARGET2CATEGORY= read_artifacts_s3(object_key='target2category.json')
+TARGET2CATEGORY = read_artifacts_s3(object_key='target2category.json')
 API_MODEL_NAME = os.environ['API_MODEL']
 API_WEIGHTS_KEY = os.environ['API_WEIGHTS']
 BUCKET_NAME = os.environ['S3_BUCKET_INPUTS']
@@ -66,7 +66,7 @@ def upload_predict():
             return render_template(
                 'index.html',
                 labels=labels,
-                confidences = confs,
+                confidences=confs,
                 image_loc=file.filename
             )
     return render_template('index.html', prediction=0, image_loc=None)

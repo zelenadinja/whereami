@@ -8,7 +8,7 @@ from models.utils import load_weights_from_s3
 
 
 class LandmarkResidual(nn.Module):
-    
+
     def __init__(
         self, model: str, weights_object_key: Optional[str], num_classes: int
     ) -> None:

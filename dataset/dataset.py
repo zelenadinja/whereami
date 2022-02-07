@@ -1,10 +1,11 @@
 """Dataset for reading images"""
 
-from typing import Callable, Tuple
+from typing import Callable, Tuple, Union
 
 import numpy as np
 import pandas as pd
 import torch
+from torch import Tensor 
 from torch.utils.data import Dataset
 
 from src.utils import read_image_s3
@@ -24,7 +25,7 @@ class LandmarkDataset(Dataset):
 
     def __getitem__(
         self, item_index: int
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    ) -> Tuple[Union[Tensor, np.ndarray], Tensor]:
 
         image_path = self.image_paths[item_index]
         image = read_image_s3(

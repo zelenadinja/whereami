@@ -9,7 +9,7 @@ if __name__ == '__main__':
 
     load_dotenv()
     S3_BUCKET = os.environ['S3_BUCKET']
-    
+
     categories = pd.read_csv(os.environ.get('LANDMARK2CAT'))
     categories['category_'] = categories['category'].apply(
         lambda cat: cat.split('Category:')[1]

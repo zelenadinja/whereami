@@ -1,6 +1,5 @@
 import os
 
-import numpy as np
 import torch
 import torch.nn.functional as F
 from dotenv import load_dotenv
@@ -19,7 +18,7 @@ def get_prediction(model, image):
     """Generate prediction for uplaoded image"""
 
     model.eval()
-    #evaluate mode
+    # evaluate mode
     augment = aug_version_1(config=args, train=True)
     augment_image = augment(image=image)['image']
     augment_image.unsqueeze_(0)
