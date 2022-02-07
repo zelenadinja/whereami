@@ -5,7 +5,7 @@ from typing import Callable, Tuple, Union
 import numpy as np
 import pandas as pd
 import torch
-from torch import Tensor 
+from torch import Tensor
 from torch.utils.data import Dataset
 
 from src.utils import read_image_s3
