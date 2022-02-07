@@ -57,7 +57,7 @@ def test_reading_images() -> None:
     """Testing reading images from S3 Bucket, sample out 30 images images and
        check their data type."""
 
-    dataframe = pd.read_csv(os.environ.get('PROCESSED_TRAIN_CSV'))
+    dataframe = pd.read_csv(os.environ['PROCESSED_TRAIN_CSV'])
     object_keys = np.array(dataframe['object_key'])
     random_keys = np.random.choice(object_keys, size=30)
 
@@ -66,7 +66,7 @@ def test_reading_images() -> None:
         assert isinstance(img, np.ndarray)
 
     with pytest.raises(ValueError):
-        read_image_s3(object_key='nonexistingimage')
+        read_image_s3(object_key='nonexistingimage', bucket_name='landmarkdataset')
 
 
 def test_reading_artifacts() -> None:
