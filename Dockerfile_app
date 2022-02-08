@@ -1,0 +1,11 @@
+FROM python:3.9-buster 
+
+ENV PYTHONPATH "${PYTHONPATH}:/whereami"
+
+WORKDIR whereami
+COPY . .
+
+RUN pip3 install -r requirements.txt  --no-cache-dir 
+
+EXPOSE 8080
+CMD python3 app/api.py
